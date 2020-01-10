@@ -4,11 +4,12 @@
 module Numeric.LinearAlgebra where
 
 import Prelude hiding ((<>), map, replicate)
+import Numeric.LinearAlgebra.Internal (List)
 import qualified Numeric.LinearAlgebra.Internal as I
 
 data Vector a = V
   { size   :: !Int
-  , toList :: !List a
+  , toList :: List a
   }
   deriving (Eq)
 
@@ -30,7 +31,7 @@ vector xs = V (I.length xs) xs
 data Matrix a = M
   { rows    :: !Int
   , cols    :: !Int
-  , toLists :: !List (List a)
+  , toLists :: List (List a)
   }
   deriving (Eq)
 
