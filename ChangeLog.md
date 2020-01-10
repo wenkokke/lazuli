@@ -1,3 +1,3 @@
-# Changelog for leadbeater
+# Changelog for lapis
 
 ## Unreleased changes

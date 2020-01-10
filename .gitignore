@@ -1,6 +1,7 @@
 dist
 dist-*
 cabal-dev
+.liquid/
 *.o
 *.hi
 *.hie
