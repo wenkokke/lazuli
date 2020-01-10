@@ -72,11 +72,23 @@ dot :: [Double] -> [Double] -> Double
 dot []     []     = 0
 dot (x:xs) (y:ys) = x*y + dot xs ys
 
+{-@ reflect vadd @-}
+{-@ vadd :: xs:List Double -> ys:ListX Double xs -> ListX Double xs @-}
+vadd :: [Double] -> [Double] -> [Double]
+vadd []     []     = []
+vadd (x:xs) (y:ys) = x + y : vadd xs ys
+
 {-@ reflect add @-}
-{-@ add :: xs:List Double -> ys:ListX Double xs -> ListX Double xs @-}
-add :: [Double] -> [Double] -> [Double]
-add []     []     = []
-add (x:xs) (y:ys) = x + y : add xs ys
+{-@ add :: x:Double -> ys:List Double -> ListX Double ys @-}
+add :: Double -> [Double] -> [Double]
+add x []     = []
+add x (y:ys) = x + y : add x ys
+
+{-@ reflect threshold @-}
+{-@ threshold :: t:Double -> xs:List Double -> ListX Bool xs @-}
+threshold :: Double -> [Double] -> [Bool]
+threshold t []     = []
+threshold t (x:xs) = (x >= t) : threshold t xs
 
 {-@ reflect scale @-}
 {-@ scale :: x:Double -> ys:List Double -> ListX Double ys @-}
@@ -88,7 +100,7 @@ scale x (y:ys) = x * y : scale x ys
 {-@ vXm :: r:Nat -> c:Nat -> xs:ListN Double r -> yss:ListN (ListN Double c) r -> ListN Double c @-}
 vXm :: Int -> Int -> [Double] -> [[Double]] -> [Double]
 vXm 0 c []     []       = replicate c 0
-vXm r c (x:xs) (ys:yss) = add (scale x ys) (vXm (r - 1) c xs yss)
+vXm r c (x:xs) (ys:yss) = scale x ys `vadd` vXm (r - 1) c xs yss
 
 {-@ reflect mXm @-}
 {-@ mXm :: i:Nat -> j:Nat -> k:Nat -> xss:ListN (ListN Double j) i -> yss:ListN (ListN Double k) j -> ListN (ListN Double k) i @-}

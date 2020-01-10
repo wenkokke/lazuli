@@ -25,9 +25,9 @@ data FullyConnected = FC
 {-@ reflect runForwards @-}
 {-@ runForwards :: l:FullyConnected -> v:VectorN Double {cols (weights l)} -> VectorN Double {rows (weights l)} @-}
 runForwards :: FullyConnected -> Vector Double -> Vector Double
-runForwards (FC b w) v = replicate (rows w) b `add` (w #> v)
+runForwards (FC b w) v = b `add` (w #> v)
 
 {-@ reflect predict @-}
 {-@ predict :: l:FullyConnected -> v:VectorN Double {cols (weights l)} -> VectorN Bool {rows (weights l)} @-}
 predict :: FullyConnected -> Vector Double -> Vector Bool
-predict l v = map (>=0) (runForwards l v)
+predict l v = threshold 0.0 (runForwards l v)

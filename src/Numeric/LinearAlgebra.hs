@@ -98,10 +98,20 @@ dot vx vy = I.dot (toList vx) (toList vy)
 (<.>) :: Vector Double -> Vector Double -> Double
 (<.>) = dot
 
+{-@ reflect vadd @-}
+{-@ vadd :: xs:Vector Double -> ys:VectorX Double xs -> VectorX Double xs @-}
+vadd :: Vector Double -> Vector Double -> Vector Double
+vadd (V n xs) (V _ ys) = V n (xs `I.vadd` ys)
+
 {-@ reflect add @-}
-{-@ add :: xs:Vector Double -> ys:VectorX Double xs -> VectorX Double xs @-}
-add :: Vector Double -> Vector Double -> Vector Double
-add (V n xs) (V _ ys) = V n (xs `I.add` ys)
+{-@ add :: x:Double -> ys:Vector Double -> VectorX Double ys @-}
+add :: Double -> Vector Double -> Vector Double
+add x (V n ys) = V n (x `I.add` ys)
+
+{-@ reflect threshold @-}
+{-@ threshold :: t:Double -> xs:Vector Double -> VectorX Bool xs @-}
+threshold :: Double -> Vector Double -> Vector Bool
+threshold x (V n ys) = V n (I.threshold x ys)
 
 {-@ reflect scale @-}
 {-@ scale :: x:Double -> ys:Vector Double -> VectorX Double ys @-}

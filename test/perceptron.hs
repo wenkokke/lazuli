@@ -1,7 +1,7 @@
 {-@ LIQUID "--reflection" @-}
 {-@ LIQUID "--ple"        @-}
 
-import Control.Monad (when)
+import Control.Monad (unless)
 import Numeric.LinearAlgebra (Vector(..), vector, Matrix(..), matrix)
 import Leadbeater.Layer.FullyConnected
 
@@ -26,5 +26,4 @@ test2 n m = toList (predict example (vector [m, n])) == [True]
 test3 n m = toList (predict example (vector [m, n])) == [False]
 
 main :: IO ()
-main = when (not test1) $
-         error "test1 failed"
+main = unless test1 (error "test1 failed")
