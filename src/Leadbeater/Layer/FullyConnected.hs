@@ -1,7 +1,7 @@
 {-@ LIQUID "--reflection" @-}
 {-@ LIQUID "--ple" @-}
 
-module Lapis.Layer.FullyConnected where
+module Leadbeater.Layer.FullyConnected where
 
 import Prelude hiding (map, replicate, (<>))
 import Numeric.LinearAlgebra

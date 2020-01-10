@@ -3,7 +3,7 @@
 
 import Control.Monad (when)
 import Numeric.LinearAlgebra (Vector(..), vector, Matrix(..), matrix)
-import Lapis.Layer.FullyConnected
+import Leadbeater.Layer.FullyConnected
 
 {-@ type TRUE = {v:Bool | v} @-}
 {-@ type Prob = {v:Double | 0.0 <= v && v <= 1.0} @-}
@@ -26,4 +26,5 @@ test2 n m = toList (predict example (vector [m, n])) == [True]
 test3 n m = toList (predict example (vector [m, n])) == [False]
 
 main :: IO ()
-main = when (not test1) $ error "test1 failed"
+main = when (not test1) $
+         error "test1 failed"

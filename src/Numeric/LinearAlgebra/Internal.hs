@@ -1,7 +1,7 @@
 {-@ LIQUID "--reflection" @-}
 {-@ LIQUID "--ple" @-}
 
-module Numeric.LinearAlgebra.List where
+module Numeric.LinearAlgebra.Internal where
 
 import Prelude hiding ((<>), drop, map, length, replicate, take)
 
