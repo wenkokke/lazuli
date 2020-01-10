@@ -8,7 +8,7 @@ import qualified Numeric.LinearAlgebra.Internal as I
 
 data Vector a = V
   { size   :: !Int
-  , toList :: ![a]
+  , toList :: !List a
   }
   deriving (Eq)
 
@@ -24,13 +24,13 @@ data Vector a = V
 
 {-@ reflect vector @-}
 {-@ vector :: l:List a -> VectorN a {len l} @-}
-vector :: [a] -> Vector a
+vector :: List a -> Vector a
 vector xs = V (I.length xs) xs
 
 data Matrix a = M
   { rows    :: !Int
   , cols    :: !Int
-  , toLists :: ![[a]]
+  , toLists :: !List (List a)
   }
   deriving (Eq)
 
@@ -44,7 +44,7 @@ data Matrix a = M
 
 {-@ reflect matrix @-}
 {-@ matrix :: r:Nat -> c:Nat -> ListN a {r * c} -> MatrixN a r c @-}
-matrix :: Int -> Int -> [a] -> Matrix a
+matrix :: Int -> Int -> List a -> Matrix a
 matrix r c xss = M r c (I.matrix r c xss)
 
 {-@ type MatrixN a R C = {v:Matrix a | rows v = R && cols v = C} @-}
