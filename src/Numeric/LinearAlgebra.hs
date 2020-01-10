@@ -65,9 +65,6 @@ asColumn (V r xs) = M r 1 (I.map (:[]) xs)
 map :: (a -> b) -> Vector a -> Vector b
 map f (V n xs) = V n (I.map f xs)
 
-instance Functor Vector where
-  fmap = map
-
 {-@ reflect replicate @-}
 {-@ replicate :: n:Nat -> x:a -> VectorN a n @-}
 replicate :: Int -> a -> Vector a
