@@ -3,8 +3,6 @@
 
 module Numeric.LinearAlgebra.Internal where
 
-import Prelude hiding ((<>), drop, map, length, replicate, take)
-
 {-@ type Pos = {n:Nat | n > 0} @-}
 
 type List a = [a]
@@ -12,98 +10,98 @@ type List a = [a]
 {-@ type ListN  a N = {l:List a | len l = N} @-}
 {-@ type ListX  a X = ListN a {len X} @-}
 
-{-@ reflect take @-}
-{-@ take :: n:Nat -> {l:List a | n <= len l} -> ListN a n @-}
-take :: Int -> List a -> List a
-take 0 xs     = []
-take n (x:xs) = x : take (n - 1) xs
+{-@ reflect take' @-}
+{-@ take' :: n:Nat -> {l:List a | n <= len l} -> ListN a n @-}
+take' :: Int -> List a -> List a
+take' 0 xs     = []
+take' n (x:xs) = x : take' (n - 1) xs
 
-{-@ reflect drop @-}
-{-@ drop :: n:Nat -> {l:List a | n <= len l} -> ListN a {len l - n} @-}
-drop :: Int -> List a -> List a
-drop 0 xs     = xs
-drop n (_:xs) = drop (n - 1) xs
+{-@ reflect drop' @-}
+{-@ drop' :: n:Nat -> {l:List a | n <= len l} -> ListN a {len l - n} @-}
+drop' :: Int -> List a -> List a
+drop' 0 xs     = xs
+drop' n (_:xs) = drop' (n - 1) xs
 
-{-@ reflect matrix @-}
-{-@ matrix :: r:Nat -> c:Nat -> xss:ListN a {r * c} -> ListN (ListN a c) r @-}
-matrix :: Int -> Int -> List a -> List (List a)
-matrix 0 c []  = []
-matrix r c xss = take c xss : matrix (r - 1) c (drop c xss)
+{-@ reflect matrix' @-}
+{-@ matrix' :: r:Nat -> c:Nat -> xss:ListN a {r * c} -> ListN (ListN a c) r @-}
+matrix' :: Int -> Int -> List a -> List (List a)
+matrix' 0 c []  = []
+matrix' r c xss = take' c xss : matrix' (r - 1) c (drop' c xss)
 
-{-@ reflect length @-}
-{-@ length :: xs:List a -> {n:Nat | n = len xs} @-}
-length :: List a -> Int
-length []     = 0
-length (_:xs) = 1 + length xs
+{-@ reflect length' @-}
+{-@ length' :: xs:[a] -> {v:Int | v = len xs} @-}
+length' :: List a -> Int
+length' []     = 0
+length' (_:xs) = 1 + (length' xs)
 
-{-@ reflect map @-}
-{-@ map :: f:(a -> b) -> xs:List a -> ys:ListX b xs @-}
-map :: (a -> b) -> List a -> [b]
-map f [] = []
-map f (x:xs) = f x : map f xs
+{-@ reflect map' @-}
+{-@ map' :: f:(a -> b) -> xs:List a -> ys:ListX b xs @-}
+map' :: (a -> b) -> List a -> [b]
+map' f [] = []
+map' f (x:xs) = f x : map' f xs
 
-{-@ reflect replicate @-}
-{-@ replicate :: n:Nat -> x:a -> ListN a n @-}
-replicate :: Int -> a -> List a
-replicate 0 x = []
-replicate n x = x : replicate (n - 1) x
+{-@ reflect replicate' @-}
+{-@ replicate' :: n:Nat -> x:a -> ListN a n @-}
+replicate' :: Int -> a -> List a
+replicate' 0 x = []
+replicate' n x = x : replicate' (n - 1) x
 
-{-@ reflect ap @-}
-{-@ ap :: fs:List (a -> b) -> xs:ListX a fs -> ListX b fs @-}
-ap :: [a -> b] -> List a -> [b]
-ap []     []     = []
-ap (f:fs) (x:xs) = f x : ap fs xs
+{-@ reflect ap' @-}
+{-@ ap' :: fs:List (a -> b) -> xs:ListX a fs -> ListX b fs @-}
+ap' :: [a -> b] -> List a -> [b]
+ap' []     []     = []
+ap' (f:fs) (x:xs) = f x : ap' fs xs
 
-{-@ reflect append @-}
-{-@ append :: xs:List a -> ys:List a -> ListN a {len xs + len ys} @-}
-append :: List a -> List a -> List a
-append []     ys = ys
-append (x:xs) ys = x : append xs ys
+{-@ reflect append' @-}
+{-@ append' :: xs:List a -> ys:List a -> ListN a {len xs + len ys} @-}
+append' :: List a -> List a -> List a
+append' []     ys = ys
+append' (x:xs) ys = x : append' xs ys
 
-{-@ reflect flatten @-}
-{-@ flatten :: r:Nat -> c:Nat -> xss:ListN (ListN a c) r -> ListN a {r * c} @-}
-flatten :: Int -> Int -> List (List a) -> List a
-flatten 0 c []       = []
-flatten r c (xs:xss) = append xs (flatten (r - 1) c xss)
+{-@ reflect flatten' @-}
+{-@ flatten' :: r:Nat -> c:Nat -> xss:ListN (ListN a c) r -> ListN a {r * c} @-}
+flatten' :: Int -> Int -> List (List a) -> List a
+flatten' 0 c []       = []
+flatten' r c (xs:xss) = append' xs (flatten' (r - 1) c xss)
 
-{-@ reflect dot @-}
-{-@ dot :: xs:List Double -> ys:ListX Double xs -> Double @-}
-dot :: List Double -> List Double -> Double
-dot []     []     = 0
-dot (x:xs) (y:ys) = x*y + dot xs ys
+{-@ reflect dot' @-}
+{-@ dot' :: xs:List Double -> ys:ListX Double xs -> Double @-}
+dot' :: List Double -> List Double -> Double
+dot' []     []     = 0
+dot' (x:xs) (y:ys) = x*y + dot' xs ys
 
-{-@ reflect vadd @-}
-{-@ vadd :: xs:List Double -> ys:ListX Double xs -> ListX Double xs @-}
-vadd :: List Double -> List Double -> List Double
-vadd []     []     = []
-vadd (x:xs) (y:ys) = x + y : vadd xs ys
+{-@ reflect vadd' @-}
+{-@ vadd' :: xs:List Double -> ys:ListX Double xs -> ListX Double xs @-}
+vadd' :: List Double -> List Double -> List Double
+vadd' []     []     = []
+vadd' (x:xs) (y:ys) = x + y : vadd' xs ys
 
-{-@ reflect add @-}
-{-@ add :: x:Double -> ys:List Double -> ListX Double ys @-}
-add :: Double -> List Double -> List Double
-add x []     = []
-add x (y:ys) = x + y : add x ys
+{-@ reflect add' @-}
+{-@ add' :: x:Double -> ys:List Double -> ListX Double ys @-}
+add' :: Double -> List Double -> List Double
+add' x []     = []
+add' x (y:ys) = x + y : add' x ys
 
-{-@ reflect threshold @-}
-{-@ threshold :: t:Double -> xs:List Double -> ListX Bool xs @-}
-threshold :: Double -> List Double -> [Bool]
-threshold t []     = []
-threshold t (x:xs) = (x >= t) : threshold t xs
+{-@ reflect threshold' @-}
+{-@ threshold' :: t:Double -> xs:List Double -> ListX Bool xs @-}
+threshold' :: Double -> List Double -> [Bool]
+threshold' t []     = []
+threshold' t (x:xs) = (x >= t) : threshold' t xs
 
-{-@ reflect scale @-}
-{-@ scale :: x:Double -> ys:List Double -> ListX Double ys @-}
-scale :: Double -> List Double -> List Double
-scale _ []     = []
-scale x (y:ys) = x * y : scale x ys
+{-@ reflect scale' @-}
+{-@ scale' :: x:Double -> ys:List Double -> ListX Double ys @-}
+scale' :: Double -> List Double -> List Double
+scale' _ []     = []
+scale' x (y:ys) = x * y : scale' x ys
 
-{-@ reflect vXm @-}
-{-@ vXm :: r:Nat -> c:Nat -> xs:ListN Double r -> yss:ListN (ListN Double c) r -> ListN Double c @-}
-vXm :: Int -> Int -> List Double -> List (List Double) -> List Double
-vXm 0 c []     []       = replicate c 0
-vXm r c (x:xs) (ys:yss) = scale x ys `vadd` vXm (r - 1) c xs yss
+{-@ reflect vXm' @-}
+{-@ vXm' :: r:Nat -> c:Nat -> xs:ListN Double r -> yss:ListN (ListN Double c) r -> ListN Double c @-}
+vXm' :: Int -> Int -> List Double -> List (List Double) -> List Double
+vXm' 0 c []     []       = replicate' c 0
+vXm' r c (x:xs) (ys:yss) = scale' x ys `vadd'` vXm' (r - 1) c xs yss
 
-{-@ reflect mXm @-}
-{-@ mXm :: i:Nat -> j:Nat -> k:Nat -> xss:ListN (ListN Double j) i -> yss:ListN (ListN Double k) j -> ListN (ListN Double k) i @-}
-mXm :: Int -> Int -> Int -> List (List Double) -> List (List Double) -> List (List Double)
-mXm 0 j k [] yss = []
-mXm i j k (xs:xss) yss = vXm j k xs yss : mXm (i - 1) j k xss yss
+{-@ reflect mXm' @-}
+{-@ mXm' :: i:Nat -> j:Nat -> k:Nat -> xss:ListN (ListN Double j) i -> yss:ListN (ListN Double k) j -> ListN (ListN Double k) i @-}
+mXm' :: Int -> Int -> Int -> List (List Double) -> List (List Double) -> List (List Double)
+mXm' 0 _ _ []       _   = []
+mXm' i j k (xs:xss) yss = vXm' j k xs yss : mXm' (i - 1) j k xss yss
