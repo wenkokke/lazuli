@@ -2,7 +2,8 @@
 {-@ LIQUID "--ple"        @-}
 
 import Control.Monad (unless)
-import Numeric.LinearAlgebra (Vector(..), vector, Matrix(..), matrix)
+import Numeric.LinearAlgebra
+import qualified Numeric.LinearAlgebra.Internal as Internal
 import Leadbeater.Layer.FullyConnected
 
 {-@ type TRUE = {v:Bool | v} @-}

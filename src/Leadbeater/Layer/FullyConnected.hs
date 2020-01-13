@@ -5,7 +5,7 @@ module Leadbeater.Layer.FullyConnected where
 
 import Prelude hiding (map, replicate, (<>))
 import Numeric.LinearAlgebra
-import Numeric.LinearAlgebra.Internal
+import qualified Numeric.LinearAlgebra.Internal as Internal
 
 data FullyConnected = FC
   { bias    :: !Double
