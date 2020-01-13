@@ -12,19 +12,16 @@ import Leadbeater.Layer.FullyConnected
 {-@ reflect example @-}
 example :: FullyConnected
 example = FC { bias    = 0.184
-             , weights = matrix 1 2
+             , weights = (1 >< 2)
                          [ 0.194 , 0.195
                          ]
              }
 
 {-@ test1 :: TRUE @-}
-test1 = toList (predict example (vector [1.0, 1.0])) == [True]
+test1 = toList (predict example (2 |> [1.0, 1.0])) == [True]
 
-{-@ test2 :: {n:Prob | n >= 0.5} -> {m:Prob | m >= 0.5} -> TRUE @-}
-test2 n m = toList (predict example (vector [m, n])) == [True]
+-- {-@ test2 :: {n:Prob | n >= 0.5} -> {m:Prob | m >= 0.5} -> TRUE @-}
+-- test2 n m = toList (predict example (vector [m, n])) == [True]
 
-{-@ test3 :: {n:Prob | n >= 0.5} -> {m:Prob | m >= 0.5} -> TRUE @-}
-test3 n m = toList (predict example (vector [m, n])) == [False]
-
-main :: IO ()
-main = unless test1 (error "test1 failed")
+-- {-@ test3 :: {n:Prob | n >= 0.5} -> {m:Prob | m >= 0.5} -> TRUE @-}
+-- test3 n m = toList (predict example (vector [m, n])) == [False]
