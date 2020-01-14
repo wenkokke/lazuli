@@ -42,4 +42,4 @@ runForwards l v = bias l +> (weights l #> v)
 {-@ reflect predict @-}
 {-@ predict :: l:FullyConnected -> v:VectorN Double (inputs l) -> VectorN Bool (outputs l) @-}
 predict :: FullyConnected -> Vector Double -> Vector Bool
-predict l v = map (geq 0.0) (runForwards l v)
+predict l v = map (`geq` 0.0) (runForwards l v)

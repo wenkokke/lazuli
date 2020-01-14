@@ -3,11 +3,10 @@
 
 import Control.Monad (unless)
 import Numeric.LinearAlgebra
-import qualified Numeric.LinearAlgebra.Internal as Internal
 import Leadbeater.Layer.FullyConnected
+import System.Exit
 
 {-@ type TRUE = {v:Bool | v} @-}
-{-@ type Prob = {v:Double | 0.0 <= v && v <= 1.0} @-}
 
 {-@ reflect example @-}
 example :: FullyConnected
@@ -18,10 +17,10 @@ example = FC { bias    = 0.184
              }
 
 {-@ test1 :: TRUE @-}
-test1 = toList (predict example (2 |> [1.0, 1.0])) == [True]
+test1 = predict example (2 |> [1.0, 1.0]) == 1 |> [True]
 
--- {-@ test2 :: {n:Prob | n >= 0.5} -> {m:Prob | m >= 0.5} -> TRUE @-}
--- test2 n m = toList (predict example (vector [m, n])) == [True]
+{-@ test2 :: {n:Double | n >= 0.5} -> {m:Double | m >= 0.5} -> TRUE @-}
+test2 n m = predict example (2 |> [m, n]) == 1 |> [False]
 
--- {-@ test3 :: {n:Prob | n >= 0.5} -> {m:Prob | m >= 0.5} -> TRUE @-}
--- test3 n m = toList (predict example (vector [m, n])) == [False]
+main :: IO ()
+main =  unless test1 (exitWith (ExitFailure 1))

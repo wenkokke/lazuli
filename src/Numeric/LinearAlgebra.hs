@@ -26,6 +26,10 @@ data Vector a = V
   }
   deriving (Eq)
 
+instance Show a => Show (Vector a) where
+  showsPrec p (V n xs) =
+    showsPrec p n . showString " |> " . showsPrec p xs
+
 {-@
 data Vector a = V
   { size   :: Nat
