@@ -2,9 +2,12 @@
 {-@ LIQUID "--ple"        @-}
 
 import Control.Monad (unless)
-import Numeric.LinearAlgebra
+import Leadbeater.LinearAlgebra
 import Leadbeater.Layer.FullyConnected
 import System.Exit
+
+import qualified Leadbeater.Prelude
+import qualified Leadbeater.LinearAlgebra.Internal
 
 {-@ type TRUE = {v:Bool | v} @-}
 

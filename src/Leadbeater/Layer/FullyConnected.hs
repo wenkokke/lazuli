@@ -3,10 +3,22 @@
 
 module Leadbeater.Layer.FullyConnected where
 
-import Prelude hiding (map, replicate, (<>))
-import Numeric.LinearAlgebra
-import Numeric.LinearAlgebra.Internal (geq)
-import qualified Numeric.LinearAlgebra.Internal as Internal
+import Prelude hiding
+  ( drop
+  , foldr
+  , length
+  , map
+  , replicate
+  , sum
+  , take
+  , zipWith
+  )
+
+import Leadbeater.Prelude (geq)
+import Leadbeater.LinearAlgebra
+
+import qualified Leadbeater.Prelude
+import qualified Leadbeater.LinearAlgebra.Internal
 
 data FullyConnected = FC
   { bias    :: !Double

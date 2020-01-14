@@ -1,7 +1,7 @@
 {-@ LIQUID "--reflection" @-}
 {-@ LIQUID "--ple" @-}
 
-module Numeric.LinearAlgebra where
+module Leadbeater.LinearAlgebra where
 
 import Prelude hiding
   ( drop
@@ -14,9 +14,12 @@ import Prelude hiding
   , zipWith
   )
 
-import Numeric.LinearAlgebra.Internal (R, List, length, plus, times, geq)
-import qualified Numeric.LinearAlgebra.Internal as Internal
+import Leadbeater.Prelude (List, length, plus, times)
+import qualified Leadbeater.Prelude as Internal
+import qualified Leadbeater.LinearAlgebra.Internal as Internal
 
+
+type R = Double
 
 -- * Vectors
 
