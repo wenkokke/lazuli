@@ -19,22 +19,22 @@ import Prelude hiding
 
 -- These functions exist because the SMT operators (+), (*), (=), etc, cannot be partially applied in the SMT language. This leads to problems with the reflection of higher-order functions, e.g., `map (+)`. For these cases, you can use `map plus` instead.
 
-{-# NO_INLINE #-}
+{-# NOINLINE plus #-}
 {-@ reflect plus @-}
 plus :: Num a => a -> a -> a
 plus x y = x + y
 
-{-# NO_INLINE #-}
+{-# NOINLINE times #-}
 {-@ reflect times @-}
 times :: Num a => a -> a -> a
 times x y = x * y
 
-{-# NO_INLINE #-}
-{-@ reflect geq @-}
+{-# NOINLINE eq #-}
+{-@ reflect eq @-}
 eq :: Ord a => a -> a -> Bool
 eq x y = x >= y
 
-{-# NO_INLINE #-}
+{-# NOINLINE geq #-}
 {-@ reflect geq @-}
 geq :: Ord a => a -> a -> Bool
 geq x y = x >= y
