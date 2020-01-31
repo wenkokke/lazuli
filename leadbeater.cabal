@@ -1,0 +1,57 @@
+name:                      leadbeater
+version:                   0.1.0.0
+description:               Please see the README on GitHub at <https://github.com/wenkokke/leadbeater#readme>
+homepage:                  https://github.com/wenkokke/leadbeater#readme
+bug-reports:               https://github.com/wenkokke/leadbeater/issues
+author:                    Wen Kokke
+maintainer:                wen.kokke@gmail.com
+copyright:                 2020 Wen Kokke
+license:                   OtherLicense
+license-file:              LICENSE
+cabal-version:             1.12
+extra-source-files:        README.md
+                         , ChangeLog.md
+build-type:                Custom
+
+custom-setup
+  setup-depends:           base >=4.7 && <5.0
+                         , Cabal >=2.4 && <2.5
+                         , liquidhaskell-cabal >=0.2 && <0.3
+
+flag liquidhaskell
+  description:             After building, verify with LiquidHaskell
+  default:                 False
+
+library
+  exposed-modules:         Leadbeater.Network
+                         , Leadbeater.LinearAlgebra
+                         , Leadbeater.LinearAlgebra.Internal
+                         , Leadbeater.Prelude
+  other-modules:           Paths_leadbeater
+  build-depends:           base >=4.7 && <5.0
+                         , liquidhaskell-cabal >=0.2 && <0.3
+  hs-source-dirs:          src
+  default-language:        Haskell2010
+  ghc-options:             -Wall -fno-warn-unused-matches
+  x-liquidhaskell-options: --reflection
+  x-liquidhaskell-options: --ple
+  x-liquidhaskell-verify:  src/Leadbeater/Network.hs
+  x-liquidhaskell-verify:  src/Leadbeater/LinearAlgebra.hs
+  x-liquidhaskell-verify:  src/Leadbeater/LinearAlgebra/Internal.hs
+  x-liquidhaskell-verify:  src/Leadbeater/Prelude.hs
+
+test-suite perceptron
+  type:                    exitcode-stdio-1.0
+  main-is:                 test/perceptron.hs
+  build-depends:           base >=4.7 && <5.0
+                         , liquidhaskell-cabal >=0.2 && <0.3
+                         , leadbeater ==0.1.0.0
+  default-language:        Haskell2010
+  ghc-options:             -Wall -fno-warn-unused-matches
+  x-liquidhaskell-options: --reflection
+  x-liquidhaskell-options: --ple
+  x-liquidhaskell-verify:  test/perceptron.hs
+
+source-repository head
+  type:                    git
+  location:                https://github.com/wenkokke/leadbeater
