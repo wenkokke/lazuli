@@ -4,10 +4,14 @@
 module Leadbeater.LinearAlgebra.Internal where
 
 import Prelude hiding
-  ( drop
+  ( all
+  , and
+  , any
+  , drop
   , foldr
   , length
   , map
+  , or
   , replicate
   , sum
   , take
@@ -15,8 +19,6 @@ import Prelude hiding
   )
 
 import Leadbeater.Prelude
-
-type R = Double
 
 {-@ reflect matrix @-}
 {-@ matrix :: r:Nat -> c:Nat -> xss:ListN a {r * c} -> ListN (ListN a c) r @-}
@@ -34,9 +36,16 @@ asRow xs = [xs]
 asColumn :: List R -> List (List R)
 asColumn xs = map singleton xs
 
-{-@ reflect sum @-}
-sum :: List R -> R
-sum = foldr plus 0
+{-@ reflect sumPosOr @-}
+{-@ sumPosOr :: Rpos -> List Rpos -> Rpos @-}
+sumPosOr :: R -> List R -> R
+sumPosOr x []     = x
+sumPosOr x (y:ys) = x `plus` sumPosOr y ys
+
+{-@ reflect sumPos @-}
+{-@ sumPos :: ListNE Rpos -> Rpos @-}
+sumPos :: List R -> R
+sumPos (x:xs) = sumPosOr x xs
 
 {-@ reflect dot @-}
 {-@ dot :: xs:List R -> ys:ListX R xs -> R @-}

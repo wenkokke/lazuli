@@ -4,22 +4,25 @@
 module Leadbeater.LinearAlgebra where
 
 import Prelude hiding
-  ( drop
+  ( all
+  , and
+  , any
+  , drop
   , foldr
   , length
   , map
+  , or
   , replicate
   , sum
   , take
   , zipWith
   )
 
-import Leadbeater.Prelude (List, length, plus, times)
+import           Leadbeater.Prelude (List, R, plus)
 import qualified Leadbeater.Prelude as Internal
 import qualified Leadbeater.LinearAlgebra.Internal as Internal
 
 
-type R = Double
 
 -- * Vectors
 
@@ -40,8 +43,9 @@ data Vector a = V
   }
 @-}
 
-{-@ type VectorN a N = {v:Vector a | size v = N} @-}
-{-@ type VectorX a X = VectorN a (size X) @-}
+{-@ type VectorNE a   = {v:Vector a | size v > 0} @-}
+{-@ type VectorN  a N = {v:Vector a | size v = N} @-}
+{-@ type VectorX  a X = VectorN a (size X) @-}
 
 {-@ reflect vector @-}
 {-@ vector :: n:Nat -> l:ListN a n -> VectorN a n @-}
@@ -82,6 +86,26 @@ zipWith f (V n xs) (V _ ys) = V n (Internal.zipWith f xs ys)
 {-@ flatten :: xss:Matrix a -> VectorN a {rows xss * cols xss} @-}
 flatten :: Matrix a -> Vector a
 flatten (M r c xss) = V (r * c) (Internal.flatten r c xss)
+
+{-@ reflect all @-}
+{-@ all :: (a -> Bool) -> Vector a -> Bool @-}
+all :: (a -> Bool) -> Vector a -> Bool
+all p (V _ xs) = Internal.all p xs
+
+{-@ reflect any @-}
+{-@ any :: (a -> Bool) -> Vector a -> Bool @-}
+any :: (a -> Bool) -> Vector a -> Bool
+any p (V _ xs) = Internal.any p xs
+
+{-@ reflect sum @-}
+{-@ sum :: Vector R -> R @-}
+sum :: Vector R -> R
+sum xs = foldr plus 0.0 xs
+
+{-@ reflect sumPos @-}
+{-@ sumPos :: VectorNE Rpos -> Rpos @-}
+sumPos :: Vector R -> R
+sumPos (V _ xs) = Internal.sumPos xs
 
 
 -- * Matrices

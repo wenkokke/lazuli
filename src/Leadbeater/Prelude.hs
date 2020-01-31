@@ -4,10 +4,17 @@
 module Leadbeater.Prelude where
 
 import Prelude hiding
-  ( drop
+  ( all
+  , and
+  , any
+  , div
+  , drop
   , foldr
   , length
+  , min
   , map
+  , max
+  , or
   , replicate
   , sum
   , take
@@ -15,29 +22,96 @@ import Prelude hiding
   )
 
 
+-- * Predicates
+
+type R = Double
+
+{-@ type Rpos = {x:R | x > 0} @-}
+
+{-@ type TRUE = {v:Bool | v} @-}
+
+
 -- * Primitives
 
 -- These functions exist because the SMT operators (+), (*), (=), etc, cannot be partially applied in the SMT language. This leads to problems with the reflection of higher-order functions, e.g., `map (+)`. For these cases, you can use `map plus` instead.
 
-{-# NO_INLINE #-}
+{-# NOINLINE plus #-}
 {-@ reflect plus @-}
+{-@ plus :: Num a => a -> a -> a @-}
 plus :: Num a => a -> a -> a
 plus x y = x + y
 
-{-# NO_INLINE #-}
+{-# NOINLINE minus #-}
+{-@ reflect minus @-}
+{-@ minus :: Num a => a -> a -> a @-}
+minus :: Num a => a -> a -> a
+minus x y = x - y
+
+{-# NOINLINE times #-}
 {-@ reflect times @-}
+{-@ times :: Num a => a -> a -> a @-}
 times :: Num a => a -> a -> a
 times x y = x * y
 
-{-# NO_INLINE #-}
-{-@ reflect geq @-}
+-- cannot be translated to SMTLIB2
+{-# NOINLINE rdiv #-}
+{-@ rdiv :: Fractional a => x:a -> y:{v:a | v /= 0} -> {v:a | v = x / y} @-}
+rdiv :: Fractional a => a -> a -> a
+rdiv x y = x / y
+
+{-@ reflect max @-}
+{-@ max :: Ord a => x:a -> y:a -> {v:a | v >= x && v >= y} @-}
+max :: Ord a => a -> a -> a
+max x y = if x `geq` y then x else y
+
+{-@ reflect min @-}
+{-@ min :: Ord a => x:a -> y:a -> {v:a | v <= x && v <= y} @-}
+min :: Ord a => a -> a -> a
+min x y = if x `leq` y then x else y
+
+{-# NOINLINE lt #-}
+{-@ reflect lt @-}
+{-@ lt :: Ord a => a -> a -> Bool @-}
+lt :: Ord a => a -> a -> Bool
+lt x y = x < y
+
+{-# NOINLINE leq #-}
+{-@ reflect leq @-}
+{-@ leq :: Ord a => a -> a -> Bool @-}
+leq :: Ord a => a -> a -> Bool
+leq x y = x <= y
+
+{-# NOINLINE eq #-}
+{-@ reflect eq @-}
+{-@ eq :: Ord a => a -> a -> Bool @-}
 eq :: Ord a => a -> a -> Bool
 eq x y = x >= y
 
-{-# NO_INLINE #-}
+{-# NOINLINE geq #-}
 {-@ reflect geq @-}
+{-@ geq :: Ord a => a -> a -> Bool @-}
 geq :: Ord a => a -> a -> Bool
 geq x y = x >= y
+
+{-# NOINLINE gt #-}
+{-@ reflect gt @-}
+{-@ gt :: Ord a => a -> a -> Bool @-}
+gt :: Ord a => a -> a -> Bool
+gt x y = x > y
+
+{-@ reflect &&& @-}
+{-@ (&&&) :: Bool -> Bool -> Bool @-}
+(&&&) :: Bool -> Bool -> Bool
+False &&& _     = False
+True  &&& True  = True
+True  &&& False = False
+
+{-@ reflect ||| @-}
+{-@ (|||) :: Bool -> Bool -> Bool @-}
+(|||) :: Bool -> Bool -> Bool
+True  ||| _     = True
+False ||| True  = True
+False ||| False = False
 
 
 -- * Lists
@@ -50,14 +124,20 @@ length :: [a] -> Int
 length []     = 0
 length (_:xs) = 1 + length xs
 
-{-@ type ListN a N = {l:List a | length l = N} @-}
-{-@ type ListX a X = ListN a {length X} @-}
+{-@ type ListNE a   = {l:List a | length l > 0} @-}
+{-@ type ListN  a N = {l:List a | length l = N} @-}
+{-@ type ListX  a X = ListN a {length X} @-}
 
 {-@ reflect foldr @-}
 {-@ foldr :: f:(a -> b -> b) -> z:b -> xs:List a -> b @-}
 foldr :: (a -> b -> b) -> b -> List a -> b
 foldr _ e []     = e
 foldr f e (x:xs) = f x (foldr f e xs)
+
+{-@ reflect sum @-}
+{-@ sum :: List R -> R @-}
+sum :: List R -> R
+sum = foldr plus 0
 
 {-@ reflect map @-}
 {-@ map :: f:(a -> b) -> xs:List a -> ListX b xs @-}
@@ -104,3 +184,13 @@ flatten _ _ _                = []
 {-@ singleton :: a -> ListN a 1 @-}
 singleton :: a -> List a
 singleton x = [x]
+
+{-@ reflect all @-}
+{-@ all :: (a -> Bool) -> List a -> Bool @-}
+all :: (a -> Bool) -> List a -> Bool
+all p xs = foldr (&&&) True (map p xs)
+
+{-@ reflect any @-}
+{-@ any :: (a -> Bool) -> List a -> Bool @-}
+any :: (a -> Bool) -> List a -> Bool
+any p xs = foldr (|||) False (map p xs)
