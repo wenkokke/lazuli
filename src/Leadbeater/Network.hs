@@ -53,12 +53,12 @@ data Layer = Layer
 {-@ reflect layerInputs @-}
 {-@ layerInputs :: Layer -> Nat @-}
 layerInputs :: Layer -> Int
-layerInputs l = cols (weights l)
+layerInputs l = rows (weights l)
 
 {-@ reflect layerOutputs @-}
 {-@ layerOutputs :: Layer -> Nat @-}
 layerOutputs :: Layer -> Int
-layerOutputs l = rows (weights l)
+layerOutputs l = cols (weights l)
 
 {-@ type LayerN I O = {l:Layer | I = layerInputs l && O = layerOutputs l} @-}
 {-@ type LayerX X   = LayerN (layerInputs X) (layerOutputs X) @-}
@@ -66,38 +66,38 @@ layerOutputs l = rows (weights l)
 {-@ reflect runLayer @-}
 {-@ runLayer :: l:Layer -> VectorN R (layerInputs l) -> VectorN R (layerOutputs l) @-}
 runLayer :: Layer -> Vector R -> Vector R
-runLayer l v = bias l +> (weights l #> v)
+runLayer l v = bias l +> (v <# weights l)
 
 
 -- * Networks
 
 data Network
    = NLast { nLast :: Layer }
-   | NCons { nHead :: Layer, nTail :: Network }
-
-{-@
-data Network
-   = NLast { nLast :: Layer }
-   | NCons { nHead :: Layer, nTail :: Network }
-@-}
+   | NStep { nHead :: Layer, nTail :: Network }
 
 {-@ reflect networkInputs @-}
 {-@ networkInputs :: Network -> Nat @-}
 networkInputs :: Network -> Int
 networkInputs (NLast l)   = layerInputs l
-networkInputs (NCons l _) = layerInputs l
+networkInputs (NStep l _) = layerInputs l
 
 {-@ reflect networkOutputs @-}
 {-@ networkOutputs :: Network -> Nat @-}
 networkOutputs :: Network -> Int
 networkOutputs (NLast l)   = layerOutputs l
-networkOutputs (NCons _ n) = networkOutputs n
+networkOutputs (NStep _ n) = networkOutputs n
 
 {-@ type NetworkN I O = {n:Network | networkInputs n == I && networkOutputs n == O} @-}
 {-@ type NetworkX L   = {n:Network | layerOutputs L == networkInputs n} @-}
+
+{-@
+data Network
+   = NLast { nLast :: Layer }
+   | NStep { nHead :: Layer, nTail :: NetworkX nHead }
+@-}
 
 {-@ reflect runNetwork @-}
 {-@ runNetwork :: n:Network -> VectorN R (networkInputs n) -> VectorN R (networkOutputs n) @-}
 runNetwork :: Network -> Vector R -> Vector R
 runNetwork (NLast l)   xs = runLayer l xs
-runNetwork (NCons l n) xs = runNetwork n (runLayer l xs)
+runNetwork (NStep l n) xs = runNetwork n (runLayer l xs)

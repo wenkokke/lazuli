@@ -130,22 +130,12 @@ flatten _ _ _                = []
 singleton :: a -> List a
 singleton x = [x]
 
-{-@ reflect and @-}
-{-@ and :: List Bool -> Bool @-}
-and :: List Bool -> Bool
-and xs = foldr (&&&) True xs
-
-{-@ reflect or @-}
-{-@ or :: List Bool -> Bool @-}
-or :: List Bool -> Bool
-or xs = foldr (|||) False xs
-
 {-@ reflect all @-}
 {-@ all :: (a -> Bool) -> List a -> Bool @-}
 all :: (a -> Bool) -> List a -> Bool
-all p xs = and (map p xs)
+all p xs = foldr (&&&) True (map p xs)
 
 {-@ reflect any @-}
 {-@ any :: (a -> Bool) -> List a -> Bool @-}
 any :: (a -> Bool) -> List a -> Bool
-any p xs = or (map p xs)
+any p xs = foldr (|||) False (map p xs)

@@ -86,16 +86,6 @@ zipWith f (V n xs) (V _ ys) = V n (Internal.zipWith f xs ys)
 flatten :: Matrix a -> Vector a
 flatten (M r c xss) = V (r * c) (Internal.flatten r c xss)
 
-{-@ reflect and @-}
-{-@ and :: Vector Bool -> Bool @-}
-and :: Vector Bool -> Bool
-and (V _ xs) = Internal.and xs
-
-{-@ reflect or @-}
-{-@ or :: Vector Bool -> Bool @-}
-or :: Vector Bool -> Bool
-or (V _ xs) = Internal.or xs
-
 {-@ reflect all @-}
 {-@ all :: (a -> Bool) -> Vector a -> Bool @-}
 all :: (a -> Bool) -> Vector a -> Bool
