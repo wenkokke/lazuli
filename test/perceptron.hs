@@ -32,7 +32,7 @@ example = NLast
                   , weights    = (1 >< 2)
                                  [ 0.194 , 0.195
                                  ]
-                  , activation = Softmax
+                  , activation = Sigmoid
                   }
           )
 

@@ -18,7 +18,7 @@ import Prelude hiding
   , zipWith
   )
 
-import           Leadbeater.Prelude (List,R,(&&&),(|||))
+import           Leadbeater.Prelude (List, R, plus)
 import qualified Leadbeater.Prelude as Internal
 import qualified Leadbeater.LinearAlgebra.Internal as Internal
 
@@ -43,8 +43,9 @@ data Vector a = V
   }
 @-}
 
-{-@ type VectorN a N = {v:Vector a | size v = N} @-}
-{-@ type VectorX a X = VectorN a (size X) @-}
+{-@ type VectorNE a   = {v:Vector a | size v > 0} @-}
+{-@ type VectorN  a N = {v:Vector a | size v = N} @-}
+{-@ type VectorX  a X = VectorN a (size X) @-}
 
 {-@ reflect vector @-}
 {-@ vector :: n:Nat -> l:ListN a n -> VectorN a n @-}
@@ -95,6 +96,16 @@ all p (V _ xs) = Internal.all p xs
 {-@ any :: (a -> Bool) -> Vector a -> Bool @-}
 any :: (a -> Bool) -> Vector a -> Bool
 any p (V _ xs) = Internal.any p xs
+
+{-@ reflect sum @-}
+{-@ sum :: Vector R -> R @-}
+sum :: Vector R -> R
+sum xs = foldr plus 0.0 xs
+
+{-@ reflect sumPos @-}
+{-@ sumPos :: VectorNE Rpos -> Rpos @-}
+sumPos :: Vector R -> R
+sumPos (V _ xs) = Internal.sumPos xs
 
 
 -- * Matrices

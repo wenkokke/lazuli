@@ -10,7 +10,9 @@ import Prelude hiding
   , drop
   , foldr
   , length
+  , min
   , map
+  , max
   , or
   , replicate
   , sum
@@ -20,17 +22,64 @@ import Prelude hiding
 
 import           Leadbeater.LinearAlgebra
 import qualified Leadbeater.LinearAlgebra.Internal
-import           Leadbeater.Prelude (R)
+import           Leadbeater.Prelude (R, plus, minus, times, rdiv, max, min, lt, leq, geq)
 import qualified Leadbeater.Prelude
 
 
 -- * Activation functions
 
 data Activation
-   = ReLu
-   | Softmax
+   = ReLU
    | Sigmoid
    deriving (Eq)
+
+{-@
+data Activation
+   = ReLU
+   | Sigmoid
+@-}
+
+{-@ reflect relu @-}
+{-@ relu :: R -> {x:R | x >= 0} @-}
+relu :: R -> R
+relu x = x `max` 0.0
+
+{-@ reflect lexp @-}
+{-@ lexp :: R -> R @-}
+lexp :: R -> R
+lexp x | x `lt` (0.0 `minus` 1.0) = 0.00001
+       | x `geq` 1.0              = (5.898 `times` x) `minus` 3.898
+       | otherwise                = x `plus` 1.0
+
+-- linear approximation of the sigmoid function
+{-@ reflect lsigmoid @-}
+{-@ lsigmoid :: R -> R @-}
+lsigmoid :: R -> R
+lsigmoid x = (0.0 `max` ((0.25 `times` x) `plus` 0.5)) `min` 1.0
+
+-- cannot be translated to SMTLIB2
+{-@ norm :: xs:VectorNE Rpos -> VectorX R xs @-}
+norm :: Vector R -> Vector R
+norm xs = map (`rdiv` sumPos xs) xs
+
+-- cannot be translated to SMTLIB2
+{-@ assume exp :: Floating a => a -> {x:a | x > 0} @-}
+
+-- cannot be translated to SMTLIB2
+{-@ assume sigmoid :: x:R -> {v:R | v = lsigmoid x} @-}
+sigmoid :: R -> R
+sigmoid x = 1 `rdiv` (1 `plus` exp (0.0 `minus` x))
+
+-- cannot be translated to SMTLIB2
+{-@ softmax :: xs:VectorNE R -> VectorX R xs @-}
+softmax :: Vector R -> Vector R
+softmax xs = norm (map exp xs)
+
+{-@ reflect runActivation @-}
+{-@ runActivation :: Activation -> xs:Vector R -> VectorX R xs @-}
+runActivation :: Activation -> Vector R -> Vector R
+runActivation ReLU    xs = map relu xs
+runActivation Sigmoid xs = map lsigmoid xs
 
 
 -- * Layers
@@ -66,7 +115,7 @@ layerOutputs l = cols (weights l)
 {-@ reflect runLayer @-}
 {-@ runLayer :: l:Layer -> VectorN R (layerInputs l) -> VectorN R (layerOutputs l) @-}
 runLayer :: Layer -> Vector R -> Vector R
-runLayer l v = bias l +> (v <# weights l)
+runLayer l v = runActivation (activation l) (bias l +> (v <# weights l))
 
 
 -- * Networks
