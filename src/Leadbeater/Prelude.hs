@@ -4,10 +4,14 @@
 module Leadbeater.Prelude where
 
 import Prelude hiding
-  ( drop
+  ( all
+  , and
+  , any
+  , drop
   , foldr
   , length
   , map
+  , or
   , replicate
   , sum
   , take
@@ -18,34 +22,47 @@ import Prelude hiding
 
 -- * Primitives
 
+type R = Double
+
 -- These functions exist because the SMT operators (+), (*), (=), etc, cannot be partially applied in the SMT language. This leads to problems with the reflection of higher-order functions, e.g., `map (+)`. For these cases, you can use `map plus` instead.
 
 {-# NOINLINE plus #-}
 {-@ reflect plus @-}
+{-@ plus :: Num a => a -> a -> a @-}
 plus :: Num a => a -> a -> a
 plus x y = x + y
 
 {-# NOINLINE times #-}
 {-@ reflect times @-}
+{-@ times :: Num a => a -> a -> a @-}
 times :: Num a => a -> a -> a
 times x y = x * y
 
 {-# NOINLINE eq #-}
 {-@ reflect eq @-}
+{-@ eq :: Ord a => a -> a -> Bool @-}
 eq :: Ord a => a -> a -> Bool
 eq x y = x >= y
 
 {-# NOINLINE geq #-}
 {-@ reflect geq @-}
+{-@ geq :: Ord a => a -> a -> Bool @-}
 geq :: Ord a => a -> a -> Bool
 geq x y = x >= y
 
-{-# NOINLINE (&&) #-}
-{-@ reflect && @-}
-(&&) :: Bool -> Bool -> Bool
-True  && True  = True
-True  && False = False
-False && _     = False
+{-@ reflect &&& @-}
+{-@ (&&&) :: Bool -> Bool -> Bool @-}
+(&&&) :: Bool -> Bool -> Bool
+False &&& _     = False
+True  &&& True  = True
+True  &&& False = False
+
+{-@ reflect ||| @-}
+{-@ (|||) :: Bool -> Bool -> Bool @-}
+(|||) :: Bool -> Bool -> Bool
+True  ||| _     = True
+False ||| True  = True
+False ||| False = False
 
 
 -- * Lists
@@ -112,3 +129,23 @@ flatten _ _ _                = []
 {-@ singleton :: a -> ListN a 1 @-}
 singleton :: a -> List a
 singleton x = [x]
+
+{-@ reflect and @-}
+{-@ and :: List Bool -> Bool @-}
+and :: List Bool -> Bool
+and xs = foldr (&&&) True xs
+
+{-@ reflect or @-}
+{-@ or :: List Bool -> Bool @-}
+or :: List Bool -> Bool
+or xs = foldr (|||) False xs
+
+{-@ reflect all @-}
+{-@ all :: (a -> Bool) -> List a -> Bool @-}
+all :: (a -> Bool) -> List a -> Bool
+all p xs = and (map p xs)
+
+{-@ reflect any @-}
+{-@ any :: (a -> Bool) -> List a -> Bool @-}
+any :: (a -> Bool) -> List a -> Bool
+any p xs = or (map p xs)

@@ -4,10 +4,14 @@
 module Leadbeater.LinearAlgebra.Internal where
 
 import Prelude hiding
-  ( drop
+  ( all
+  , and
+  , any
+  , drop
   , foldr
   , length
   , map
+  , or
   , replicate
   , sum
   , take
@@ -15,8 +19,6 @@ import Prelude hiding
   )
 
 import Leadbeater.Prelude
-
-type R = Double
 
 {-@ reflect matrix @-}
 {-@ matrix :: r:Nat -> c:Nat -> xss:ListN a {r * c} -> ListN (ListN a c) r @-}

@@ -4,22 +4,25 @@
 module Leadbeater.LinearAlgebra where
 
 import Prelude hiding
-  ( drop
+  ( all
+  , and
+  , any
+  , drop
   , foldr
   , length
   , map
+  , or
   , replicate
   , sum
   , take
   , zipWith
   )
 
-import Leadbeater.Prelude (List, length, plus, times)
+import           Leadbeater.Prelude (List,R,(&&&),(|||))
 import qualified Leadbeater.Prelude as Internal
 import qualified Leadbeater.LinearAlgebra.Internal as Internal
 
 
-type R = Double
 
 -- * Vectors
 
@@ -82,6 +85,26 @@ zipWith f (V n xs) (V _ ys) = V n (Internal.zipWith f xs ys)
 {-@ flatten :: xss:Matrix a -> VectorN a {rows xss * cols xss} @-}
 flatten :: Matrix a -> Vector a
 flatten (M r c xss) = V (r * c) (Internal.flatten r c xss)
+
+{-@ reflect and @-}
+{-@ and :: Vector Bool -> Bool @-}
+and :: Vector Bool -> Bool
+and (V _ xs) = Internal.and xs
+
+{-@ reflect or @-}
+{-@ or :: Vector Bool -> Bool @-}
+or :: Vector Bool -> Bool
+or (V _ xs) = Internal.or xs
+
+{-@ reflect all @-}
+{-@ all :: (a -> Bool) -> Vector a -> Bool @-}
+all :: (a -> Bool) -> Vector a -> Bool
+all p (V _ xs) = Internal.all p xs
+
+{-@ reflect any @-}
+{-@ any :: (a -> Bool) -> Vector a -> Bool @-}
+any :: (a -> Bool) -> Vector a -> Bool
+any p (V _ xs) = Internal.any p xs
 
 
 -- * Matrices
