@@ -1,7 +1,7 @@
 {-@ LIQUID "--reflection" @-}
 {-@ LIQUID "--ple" @-}
 
-module Leadbeater.Layer.FullyConnected where
+module Leadbeater.Layers.FullyConnected where
 
 import Prelude hiding
   ( drop
@@ -14,22 +14,22 @@ import Prelude hiding
   , zipWith
   )
 
-import Leadbeater.Prelude (geq)
 import Leadbeater.LinearAlgebra
+import Leadbeater.Prelude (geq)
 
 import qualified Leadbeater.Prelude
 import qualified Leadbeater.LinearAlgebra.Internal
 
 data FullyConnected = FC
-  { bias    :: !Double
-  , weights :: Matrix Double
+  { bias    :: !R
+  , weights :: Matrix R
   }
   deriving (Eq)
 
 {-@
 data FullyConnected = FC
-  { bias    :: Double
-  , weights :: Matrix Double
+  { bias    :: R
+  , weights :: Matrix R
   }
 @-}
 
@@ -47,11 +47,6 @@ outputs l = rows (weights l)
 {-@ type FullyConnectedX X   = FullyConnectedN (inputs X) (outputs X) @-}
 
 {-@ reflect runForwards @-}
-{-@ runForwards :: l:FullyConnected -> VectorN Double (inputs l) -> VectorN Double (outputs l) @-}
-runForwards :: FullyConnected -> Vector Double -> Vector Double
+{-@ runForwards :: l:FullyConnected -> VectorN R (inputs l) -> VectorN R (outputs l) @-}
+runForwards :: FullyConnected -> Vector R -> Vector R
 runForwards l v = bias l +> (weights l #> v)
-
-{-@ reflect predict @-}
-{-@ predict :: l:FullyConnected -> v:VectorN Double (inputs l) -> VectorN Bool (outputs l) @-}
-predict :: FullyConnected -> Vector Double -> Vector Bool
-predict l v = map (`geq` 0.0) (runForwards l v)

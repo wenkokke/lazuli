@@ -14,6 +14,7 @@ import Prelude hiding
   , zipWith
   )
 
+{-@ type TRUE = {v:Bool | v} @-}
 
 -- * Primitives
 
@@ -38,6 +39,13 @@ eq x y = x >= y
 {-@ reflect geq @-}
 geq :: Ord a => a -> a -> Bool
 geq x y = x >= y
+
+{-# NOINLINE (&&) #-}
+{-@ reflect && @-}
+(&&) :: Bool -> Bool -> Bool
+True  && True  = True
+True  && False = False
+False && _     = False
 
 
 -- * Lists
