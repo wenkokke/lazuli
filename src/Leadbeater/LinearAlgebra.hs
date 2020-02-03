@@ -125,8 +125,9 @@ data Matrix a = M
   }
 @-}
 
-{-@ type MatrixN a R C = {v:Matrix a | rows v = R && cols v = C} @-}
-{-@ type MatrixX a X   = MatrixN a {rows X} {cols X} @-}
+{-@ type MatrixNE a     = {v:Matrix a | rows v > 0 && cols v > 0} @-}
+{-@ type MatrixN  a R C = {v:Matrix a | rows v = R && cols v = C} @-}
+{-@ type MatrixX  a X   = MatrixN a {rows X} {cols X} @-}
 
 {-@ reflect matrix @-}
 {-@ matrix :: r:Nat -> c:Nat -> ListN a {r * c} -> MatrixN a r c @-}

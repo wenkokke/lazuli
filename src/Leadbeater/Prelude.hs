@@ -26,6 +26,7 @@ import Prelude hiding
 
 type R = Double
 
+{-@ type Pos = {n:Int | n > 0} @-}
 {-@ type Rpos = {x:R | x > 0} @-}
 
 {-@ type TRUE = {v:Bool | v} @-}
@@ -53,8 +54,8 @@ minus x y = x - y
 times :: Num a => a -> a -> a
 times x y = x * y
 
--- cannot be translated to SMTLIB2
 {-# NOINLINE rdiv #-}
+{-@ reflect rdiv @-}
 {-@ rdiv :: Fractional a => x:a -> y:{v:a | v /= 0} -> {v:a | v = x / y} @-}
 rdiv :: Fractional a => a -> a -> a
 rdiv x y = x / y
