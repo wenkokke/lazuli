@@ -59,7 +59,7 @@ lexp x | x `leq` (-1.0) = 0.00001
 lsigmoid :: R -> R
 lsigmoid x = (0.0 `max` ((0.25 `times` x) `plus` 0.5)) `min` 1.0
 
--- {-@ reflect norm @-}
+{-@ reflect norm @-}
 {-@ norm :: bar:VectorNE Rpos -> VectorX R bar @-}
 norm :: Vector R -> Vector R
 norm foo = let s = sumPos foo in map (`rdiv` s) foo
