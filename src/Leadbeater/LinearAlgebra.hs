@@ -44,7 +44,7 @@ data Vector a = V
 @-}
 
 {-@ type VectorNE a   = {v:Vector a | size v > 0} @-}
-{-@ type VectorN  a N = {v:Vector a | size v = N} @-}
+{-@ type VectorN  a N = {v:Vector a | size v == N} @-}
 {-@ type VectorX  a X = VectorN a (size X) @-}
 
 {-@ reflect vector @-}

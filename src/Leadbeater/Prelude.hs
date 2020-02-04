@@ -126,8 +126,8 @@ length []     = 0
 length (_:xs) = 1 + length xs
 
 {-@ type ListNE a   = {l:List a | length l > 0} @-}
-{-@ type ListN  a N = {l:List a | length l = N} @-}
-{-@ type ListX  a X = ListN a {length X} @-}
+{-@ type ListN  a N = {l:List a | length l == N} @-}
+{-@ type ListX  a X = ListN a (length X) @-}
 
 {-@ reflect foldr @-}
 {-@ foldr :: f:(a -> b -> b) -> z:b -> xs:List a -> b @-}

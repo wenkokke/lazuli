@@ -31,6 +31,7 @@ import qualified Leadbeater.Prelude
 data Activation
    = ReLU
    | Sigmoid
+--   | Softmax
    deriving (Eq)
 
 {-@
@@ -38,6 +39,7 @@ data Activation
    = ReLU
    | Sigmoid
 @-}
+--   | Softmax
 
 {-@ reflect relu @-}
 {-@ relu :: R -> {x:R | x >= 0} @-}
@@ -45,7 +47,7 @@ relu :: R -> R
 relu x = x `max` 0.0
 
 {-@ reflect lexp @-}
-{-@ lexp :: R -> {v:R | v > 0} @-}
+{-@ lexp :: R -> Rpos @-}
 lexp :: R -> R
 lexp x | x `leq` (-1.0) = 0.00001
        | x `geq`   1.0  = (5.898 `times` x) `minus` 3.898
@@ -58,9 +60,9 @@ lsigmoid :: R -> R
 lsigmoid x = (0.0 `max` ((0.25 `times` x) `plus` 0.5)) `min` 1.0
 
 -- {-@ reflect norm @-}
-{-@ norm :: xs:VectorNE Rpos -> VectorX R xs @-}
+{-@ norm :: bar:VectorNE Rpos -> VectorX R bar @-}
 norm :: Vector R -> Vector R
-norm xs = let s = sumPos xs in map (`rdiv` s) xs
+norm foo = let s = sumPos foo in map (`rdiv` s) foo
 
 -- cannot be translated to SMTLIB2
 {-@ assume exp :: Floating a => a -> {x:a | x > 0} @-}
