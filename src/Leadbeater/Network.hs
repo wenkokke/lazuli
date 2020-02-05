@@ -31,20 +31,23 @@ import qualified Leadbeater.Prelude
 data Activation
    = ReLU
    | Sigmoid
---   | Softmax
+   | Softmax
    deriving (Eq)
 
 {-@
 data Activation
    = ReLU
    | Sigmoid
+   | Softmax
 @-}
---   | Softmax
 
 {-@ reflect relu @-}
 {-@ relu :: R -> {x:R | x >= 0} @-}
 relu :: R -> R
 relu x = x `max` 0.0
+
+-- cannot be translated to SMTLIB2
+{-@ assume exp :: Floating a => a -> {x:a | x > 0} @-}
 
 {-@ reflect lexp @-}
 {-@ lexp :: R -> Rpos @-}
@@ -53,24 +56,21 @@ lexp x | x `leq` (-1.0) = 0.00001
        | x `geq`   1.0  = (5.898 `times` x) `minus` 3.898
        | otherwise      = x `plus` 1.0
 
--- linear approximation of the sigmoid function
-{-@ reflect lsigmoid @-}
-{-@ lsigmoid :: R -> R @-}
-lsigmoid :: R -> R
-lsigmoid x = (0.0 `max` ((0.25 `times` x) `plus` 0.5)) `min` 1.0
-
--- {-@ reflect norm @-}
+{-@ reflect norm @-}
 {-@ norm :: bar:VectorNE Rpos -> VectorX R bar @-}
 norm :: Vector R -> Vector R
 norm foo = let s = sumPos foo in map (`rdiv` s) foo
 
 -- cannot be translated to SMTLIB2
-{-@ assume exp :: Floating a => a -> {x:a | x > 0} @-}
-
--- cannot be translated to SMTLIB2
 {-@ assume sigmoid :: x:R -> {v:R | v = lsigmoid x} @-}
 sigmoid :: R -> R
 sigmoid x = 1 `rdiv` (1 `plus` exp (0.0 `minus` x))
+
+-- linear approximation of the sigmoid function
+{-@ reflect lsigmoid @-}
+{-@ lsigmoid :: R -> R @-}
+lsigmoid :: R -> R
+lsigmoid x = (0.0 `max` ((0.25 `times` x) `plus` 0.5)) `min` 1.0
 
 -- cannot be translated to SMTLIB2
 {-@ softmax :: xs:VectorNE R -> VectorX R xs @-}
@@ -78,7 +78,7 @@ softmax :: Vector R -> Vector R
 softmax xs = norm (map exp xs)
 
 -- linear approximation of the softmax function
--- {-@ reflect lsoftmax @-}
+{-@ reflect lsoftmax @-}
 {-@ lsoftmax :: xs:VectorNE R -> VectorX R xs @-}
 lsoftmax :: Vector R -> Vector R
 lsoftmax xs = norm (map lexp xs)
@@ -88,7 +88,7 @@ lsoftmax xs = norm (map lexp xs)
 runActivation :: Activation -> Vector R -> Vector R
 runActivation ReLU    xs = map relu xs
 runActivation Sigmoid xs = map lsigmoid xs
--- runActivation Softmax xs = lsoftmax xs
+runActivation Softmax xs = lsoftmax xs
 
 
 -- * Layers
