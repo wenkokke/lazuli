@@ -94,16 +94,16 @@ runActivation Softmax xs = lsoftmax xs
 -- * Layers
 
 data Layer = Layer
-   { bias       :: !R
-   , weights    :: Matrix R
+   { weights    :: Matrix R
+   , bias       :: Vector R
    , activation :: Activation
    }
    deriving (Eq)
 
 {-@
 data Layer = Layer
-   { bias       :: R
-   , weights    :: MatrixNE R
+   { weights    :: MatrixNE R
+   , bias       :: VectorN R (cols weights)
    , activation :: Activation
    }
 @-}
@@ -124,7 +124,7 @@ layerOutputs l = cols (weights l)
 {-@ reflect runLayer @-}
 {-@ runLayer :: l:Layer -> VectorN R (layerInputs l) -> VectorN R (layerOutputs l) @-}
 runLayer :: Layer -> Vector R -> Vector R
-runLayer l v = runActivation (activation l) (bias l +> (v <# weights l))
+runLayer l v = runActivation (activation l) (bias l <+> (v <# weights l))
 
 
 -- * Networks

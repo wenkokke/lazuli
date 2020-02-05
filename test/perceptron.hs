@@ -28,10 +28,8 @@ import           System.Exit
 example :: Network
 example = NLast
           (
-            Layer { bias       = 0.184
-                  , weights    = (1 >< 2)
-                                 [ 0.194 , 0.195
-                                 ]
+            Layer { bias       = 1 |> [0.184]
+                  , weights    = (1 >< 2) [ 0.194 , 0.195]
                   , activation = Sigmoid
                   }
           )
