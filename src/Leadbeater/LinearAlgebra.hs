@@ -44,8 +44,8 @@ data Vector a = V
 @-}
 
 {-@ type VectorNE a   = {v:Vector a | size v > 0} @-}
-{-@ type VectorN  a N = {v:Vector a | size v == N} @-}
-{-@ type VectorX  a X = VectorN a (size X) @-}
+{-@ type VectorN  a N = {v:Vector a | size v = N} @-}
+{-@ type VectorX  a X = VectorN a {size X} @-}
 
 {-@ reflect vector @-}
 {-@ vector :: n:Nat -> l:ListN a n -> VectorN a n @-}
@@ -188,32 +188,32 @@ scale :: Double -> Vector Double -> Vector Double
 scale x (V n ys) = V n (Internal.scale x ys)
 
 {-@ reflect vXm @-}
-{-@ vXm :: xs:Vector Double -> yss:{yss:Matrix Double | size xs = rows yss} -> VectorN Double {cols yss} @-}
+{-@ vXm :: xs:Vector Double -> yss:{v:Matrix Double | size xs = rows v} -> VectorN Double {cols yss} @-}
 vXm :: Vector Double -> Matrix Double -> Vector Double
 vXm (V r xs) (M _ c yss) = V c (Internal.vXm r c xs yss)
 
 {-@ reflect <# @-}
-{-@ (<#) :: xs:Vector Double -> yss:{yss:Matrix Double | size xs = rows yss} -> VectorN Double {cols yss} @-}
+{-@ (<#) :: xs:Vector Double -> yss:{v:Matrix Double | size xs = rows v} -> VectorN Double {cols yss} @-}
 (<#) :: Vector Double -> Matrix Double -> Vector Double
 (<#) = vXm
 
 {-@ reflect mXm @-}
-{-@ mXm :: xss:Matrix Double -> yss:{yss:Matrix Double | cols xss = rows yss} -> MatrixN Double {rows xss} {cols yss} @-}
+{-@ mXm :: xss:Matrix Double -> yss:{v:Matrix Double | cols xss = rows v} -> MatrixN Double {rows xss} {cols yss} @-}
 mXm :: Matrix Double -> Matrix Double -> Matrix Double
 mXm (M i j xss) (M _ k yss) = M i k (Internal.mXm i j k xss yss)
 
 {-@ reflect <#> @-}
-{-@ (<#>) :: xss:Matrix Double -> yss:{yss:Matrix Double | cols xss = rows yss} -> MatrixN Double {rows xss} {cols yss} @-}
+{-@ (<#>) :: xss:Matrix Double -> yss:{v:Matrix Double | cols xss = rows v} -> MatrixN Double {rows xss} {cols yss} @-}
 (<#>) :: Matrix Double -> Matrix Double -> Matrix Double
 (<#>) = mXm
 
 {-@ reflect mXv @-}
-{-@ mXv :: xss:Matrix Double -> ys:VectorN Double (cols xss) -> VectorN Double (rows xss) @-}
+{-@ mXv :: xss:Matrix Double -> ys:VectorN Double {cols xss} -> VectorN Double {rows xss} @-}
 mXv :: Matrix Double -> Vector Double -> Vector Double
 mXv xss ys = flatten (xss <#> asColumn ys)
 
 {-@ reflect #> @-}
-{-@ (#>) :: xss:Matrix Double -> ys:VectorN Double (cols xss) -> VectorN Double (rows xss) @-}
+{-@ (#>) :: xss:Matrix Double -> ys:VectorN Double {cols xss} -> VectorN Double {rows xss} @-}
 (#>) :: Matrix Double -> Vector Double -> Vector Double
 (#>) = mXv
 
