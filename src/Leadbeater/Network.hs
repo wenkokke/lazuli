@@ -32,7 +32,6 @@ data Activation
    = ReLU
    | Sigmoid
    | Softmax
-   deriving (Eq)
 
 {-@
 data Activation
@@ -53,8 +52,8 @@ relu x = x `max` 0.0
 {-@ lexp :: R -> Rpos @-}
 lexp :: R -> R
 lexp x | x `leq` (-1.0) = 0.00001
-       | x `geq`   1.0  = (5.898 `times` x) `minus` 3.898
-       | otherwise      = x `plus` 1.0
+       | x `geq`   1.0  = 5.898 * x - 3.898
+       | otherwise      = x + 1.0
 
 {-@ reflect norm @-}
 {-@ norm :: bar:VectorNE Rpos -> VectorX R bar @-}
@@ -62,15 +61,15 @@ norm :: Vector R -> Vector R
 norm foo = let s = sumPos foo in map (`rdiv` s) foo
 
 -- cannot be translated to SMTLIB2
-{-@ assume sigmoid :: x:R -> {v:R | v = lsigmoid x} @-}
+{-@ assume sigmoid :: x:R -> {v:R | v == lsigmoid x} @-}
 sigmoid :: R -> R
-sigmoid x = 1 `rdiv` (1 `plus` exp (0.0 `minus` x))
+sigmoid x = 1 / (1 + exp (-x))
 
 -- linear approximation of the sigmoid function
 {-@ reflect lsigmoid @-}
 {-@ lsigmoid :: R -> R @-}
 lsigmoid :: R -> R
-lsigmoid x = (0.0 `max` ((0.25 `times` x) `plus` 0.5)) `min` 1.0
+lsigmoid x = min (max 0.0 (0.25 * x + 0.5)) 1.0
 
 -- cannot be translated to SMTLIB2
 {-@ softmax :: xs:VectorNE R -> VectorX R xs @-}
@@ -98,7 +97,6 @@ data Layer = Layer
    , bias       :: Vector R
    , activation :: Activation
    }
-   deriving (Eq)
 
 {-@
 data Layer = Layer
@@ -118,7 +116,7 @@ layerInputs l = rows (weights l)
 layerOutputs :: Layer -> Int
 layerOutputs l = cols (weights l)
 
-{-@ type LayerN I O = {l:Layer | I = layerInputs l && O = layerOutputs l} @-}
+{-@ type LayerN I O = {v:Layer | layerInputs v == I && layerOutputs v == O} @-}
 {-@ type LayerX X   = LayerN (layerInputs X) (layerOutputs X) @-}
 
 {-@ reflect runLayer @-}
@@ -145,8 +143,8 @@ networkOutputs :: Network -> Int
 networkOutputs (NLast l)   = layerOutputs l
 networkOutputs (NStep _ n) = networkOutputs n
 
-{-@ type NetworkN I O = {n:Network | networkInputs n == I && networkOutputs n == O} @-}
-{-@ type NetworkX L   = {n:Network | layerOutputs L == networkInputs n} @-}
+{-@ type NetworkN I O = {v:Network | networkInputs v == I && networkOutputs v == O} @-}
+{-@ type NetworkX L   = {v:Network | layerOutputs L == networkInputs v} @-}
 
 {-@
 data Network

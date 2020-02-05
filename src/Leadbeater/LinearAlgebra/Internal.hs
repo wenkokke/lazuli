@@ -21,7 +21,7 @@ import Prelude hiding
 import Leadbeater.Prelude
 
 {-@ reflect matrix @-}
-{-@ matrix :: r:Nat -> c:Nat -> xss:ListN a {r * c} -> ListN (ListN a c) r @-}
+{-@ matrix :: r:Nat -> c:Nat -> xss:{v:List a | length v == r * c} -> ListN (ListN a c) r @-}
 matrix :: Int -> Int -> List a -> List (List a)
 matrix r c xss | r > 0 = take c xss : matrix (r - 1) c (drop c xss)
 matrix _ _ _           = []

@@ -153,7 +153,7 @@ take 0 xs     = []
 take n (x:xs) = x : take (n - 1) xs
 
 {-@ reflect drop @-}
-{-@ drop :: n:Nat -> {l:List a | n <= length l} -> ListN a {length l - n} @-}
+{-@ drop :: n:Nat -> l:{v:List a | n <= length v} -> {v:List a | length v == length l - n} @-}
 drop :: Int -> List a -> List a
 drop 0 xs     = xs
 drop n (_:xs) = drop (n - 1) xs
@@ -165,7 +165,7 @@ replicate 0 x = []
 replicate n x = x : replicate (n - 1) x
 
 {-@ reflect append @-}
-{-@ append :: xs:List a -> ys:List a -> ListN a {length xs + length ys} @-}
+{-@ append :: xs:List a -> ys:List a -> {v:List a | length v == length xs + length ys} @-}
 append :: List a -> List a -> List a
 append []     ys = ys
 append (x:xs) ys = x : append xs ys
@@ -176,7 +176,7 @@ zipWith :: (a -> b -> c) -> List a -> List b -> List c
 zipWith f (x:xs) (y:ys) = f x y : zipWith f xs ys
 zipWith _ _      _      = []
 
-{-@ flatten :: r:Nat -> c:Nat -> xss:ListN (ListN a c) r -> ListN a {r * c} @-}
+{-@ flatten :: r:Nat -> c:Nat -> xss:ListN (ListN a c) r -> {v:List a | length v == r * c} @-}
 flatten :: Int -> Int -> List (List a) -> List a
 flatten r c (xs:xss) | r > 0 = xs `append` flatten (r - 1) c xss
 flatten _ _ _                = []

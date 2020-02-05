@@ -18,7 +18,7 @@ import           Control.Monad (unless)
 import           Leadbeater.Network
 import           Leadbeater.LinearAlgebra
 import qualified Leadbeater.LinearAlgebra.Internal
-import           Leadbeater.Prelude (R,geq)
+import           Leadbeater.Prelude (R, geq)
 import qualified Leadbeater.Prelude
 import           System.Exit
 
@@ -29,10 +29,13 @@ example :: Network
 example = NLast
           (
             Layer { bias       = 1 |> [0.184]
-                  , weights    = (1 >< 2) [ 0.194 , 0.195]
+                  , weights    = (1 >< 2) [0.194, 0.195]
                   , activation = Sigmoid
                   }
           )
+
+{-@ test0 :: TRUE @-}
+test0 = networkInputs example == 2
 
 {-@ test1 :: TRUE @-}
 test1 = all (`geq` 0.0) (runNetwork example (2 |> [1.0, 1.0]))
@@ -41,4 +44,4 @@ test1 = all (`geq` 0.0) (runNetwork example (2 |> [1.0, 1.0]))
 test2 n m = all (`geq` 0.0) (runNetwork example (2 |> [m, n]))
 
 main :: IO ()
-main =  unless test1 (exitWith (ExitFailure 1))
+main = print (networkInputs example)

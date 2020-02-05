@@ -30,7 +30,6 @@ data Vector a = V
   { size   :: !Int
   , toList :: List a
   }
-  deriving (Eq)
 
 instance Show a => Show (Vector a) where
   showsPrec p (V n xs) =
@@ -44,8 +43,8 @@ data Vector a = V
 @-}
 
 {-@ type VectorNE a   = {v:Vector a | size v > 0} @-}
-{-@ type VectorN  a N = {v:Vector a | size v = N} @-}
-{-@ type VectorX  a X = VectorN a {size X} @-}
+{-@ type VectorN  a N = {v:Vector a | size v == N} @-}
+{-@ type VectorX  a X = VectorN a (size X) @-}
 
 {-@ reflect vector @-}
 {-@ vector :: n:Nat -> l:ListN a n -> VectorN a n @-}
@@ -73,7 +72,7 @@ replicate :: Int -> a -> Vector a
 replicate n x = V n (Internal.replicate n x)
 
 {-@ reflect append @-}
-{-@ append :: xs:Vector a -> ys:Vector a -> VectorN a {size xs + size ys} @-}
+{-@ append :: xs:Vector a -> ys:Vector a -> {v:Vector a | size v == size xs + size ys} @-}
 append :: Vector a -> Vector a -> Vector a
 append (V n xs) (V m ys) = V (n + m) (xs `Internal.append` ys)
 
@@ -83,7 +82,7 @@ zipWith :: (a -> b -> c) -> Vector a -> Vector b -> Vector c
 zipWith f (V n xs) (V _ ys) = V n (Internal.zipWith f xs ys)
 
 {-@ reflect flatten @-}
-{-@ flatten :: xss:Matrix a -> VectorN a {rows xss * cols xss} @-}
+{-@ flatten :: xss:Matrix a -> {v:Vector a | size v == rows xss * cols xss} @-}
 flatten :: Matrix a -> Vector a
 flatten (M r c xss) = V (r * c) (Internal.flatten r c xss)
 
@@ -111,11 +110,10 @@ sumPos (V _ xs) = Internal.sumPos xs
 -- * Matrices
 
 data Matrix a = M
-  { rows    :: !Int
-  , cols    :: !Int
+  { rows    :: Int
+  , cols    :: Int
   , toLists :: List (List a)
   }
-  deriving (Eq)
 
 {-@
 data Matrix a = M
@@ -126,16 +124,16 @@ data Matrix a = M
 @-}
 
 {-@ type MatrixNE a     = {v:Matrix a | rows v > 0 && cols v > 0} @-}
-{-@ type MatrixN  a R C = {v:Matrix a | rows v = R && cols v = C} @-}
-{-@ type MatrixX  a X   = MatrixN a {rows X} {cols X} @-}
+{-@ type MatrixN  a R C = {v:Matrix a | rows v == R && cols v == C} @-}
+{-@ type MatrixX  a X   = MatrixN a (rows X) (cols X) @-}
 
 {-@ reflect matrix @-}
-{-@ matrix :: r:Nat -> c:Nat -> ListN a {r * c} -> MatrixN a r c @-}
+{-@ matrix :: r:Nat -> c:Nat -> {v:List a | length v == r * c} -> MatrixN a r c @-}
 matrix :: Int -> Int -> List a -> Matrix a
 matrix r c xss = M r c (Internal.matrix r c xss)
 
 {-@ reflect >< @-}
-{-@ (><) :: r:Nat -> c:Nat -> ListN a {r * c} -> MatrixN a r c @-}
+{-@ (><) :: r:Nat -> c:Nat -> {v:List a | length v == r * c} -> MatrixN a r c @-}
 (><) :: Int -> Int -> List a -> Matrix a
 (><) = matrix
 
@@ -143,81 +141,76 @@ matrix r c xss = M r c (Internal.matrix r c xss)
 -- * Linear Algebra
 
 {-@ reflect asRow @-}
-{-@ asRow :: xs:Vector Double -> MatrixN Double 1 {size xs} @-}
-asRow :: Vector Double -> Matrix Double
+{-@ asRow :: xs:Vector R -> {v:Matrix R | rows v == 1 && cols v == size xs} @-}
+asRow :: Vector R -> Matrix R
 asRow (V c xs) = M 1 c (Internal.asRow xs)
 
 {-@ reflect asColumn @-}
-{-@ asColumn :: xs:Vector Double -> MatrixN Double {size xs} 1 @-}
-asColumn :: Vector Double -> Matrix Double
+{-@ asColumn :: xs:Vector R -> {v:Matrix R | rows v == size xs && cols v == 1} @-}
+asColumn :: Vector R -> Matrix R
 asColumn (V r xs) = M r 1 (Internal.asColumn xs)
 
 {-@ reflect dot @-}
-{-@ dot :: xs:Vector Double -> ys:VectorX Double xs -> Double @-}
-dot :: Vector Double -> Vector Double -> Double
+{-@ dot :: xs:Vector R -> ys:VectorX R xs -> R @-}
+dot :: Vector R -> Vector R -> R
 dot vx vy = Internal.dot (toList vx) (toList vy)
 
 {-@ reflect <.> @-}
-{-@ (<.>) :: xs:Vector Double -> ys:VectorX Double xs -> Double @-}
-(<.>) :: Vector Double -> Vector Double -> Double
+{-@ (<.>) :: xs:Vector R -> ys:VectorX R xs -> R @-}
+(<.>) :: Vector R -> Vector R -> R
 (<.>) = dot
 
 {-@ reflect vAv @-}
-{-@ vAv :: xs:Vector Double -> ys:VectorX Double xs -> VectorX Double xs @-}
-vAv :: Vector Double -> Vector Double -> Vector Double
+{-@ vAv :: xs:Vector R -> ys:VectorX R xs -> VectorX R xs @-}
+vAv :: Vector R -> Vector R -> Vector R
 vAv (V n xs) (V _ ys) = V n (xs `Internal.vAv` ys)
 
 {-@ reflect <+> @-}
-{-@ (<+>) :: xs:Vector Double -> ys:VectorX Double xs -> VectorX Double xs @-}
-(<+>) :: Vector Double -> Vector Double -> Vector Double
+{-@ (<+>) :: xs:Vector R -> ys:VectorX R xs -> VectorX R xs @-}
+(<+>) :: Vector R -> Vector R -> Vector R
 (<+>) = vAv
 
 {-@ reflect sAv @-}
-{-@ sAv :: x:Double -> ys:Vector Double -> VectorX Double ys @-}
-sAv :: Double -> Vector Double -> Vector Double
+{-@ sAv :: x:R -> ys:Vector R -> VectorX R ys @-}
+sAv :: R -> Vector R -> Vector R
 sAv x (V n ys) = V n (x `Internal.sAv` ys)
 
 {-@ reflect +> @-}
-{-@ (+>) :: x:Double -> ys:Vector Double -> VectorX Double ys @-}
-(+>) :: Double -> Vector Double -> Vector Double
+{-@ (+>) :: x:R -> ys:Vector R -> VectorX R ys @-}
+(+>) :: R -> Vector R -> Vector R
 (+>) = sAv
 
 {-@ reflect scale @-}
-{-@ scale :: x:Double -> ys:Vector Double -> VectorX Double ys @-}
-scale :: Double -> Vector Double -> Vector Double
+{-@ scale :: x:R -> ys:Vector R -> VectorX R ys @-}
+scale :: R -> Vector R -> Vector R
 scale x (V n ys) = V n (Internal.scale x ys)
 
 {-@ reflect vXm @-}
-{-@ vXm :: xs:Vector Double -> yss:{v:Matrix Double | size xs = rows v} -> VectorN Double {cols yss} @-}
-vXm :: Vector Double -> Matrix Double -> Vector Double
+{-@ vXm :: xs:Vector R -> yss:{v:Matrix R | size xs == rows v} -> VectorN R (cols yss) @-}
+vXm :: Vector R -> Matrix R -> Vector R
 vXm (V r xs) (M _ c yss) = V c (Internal.vXm r c xs yss)
 
 {-@ reflect <# @-}
-{-@ (<#) :: xs:Vector Double -> yss:{v:Matrix Double | size xs = rows v} -> VectorN Double {cols yss} @-}
-(<#) :: Vector Double -> Matrix Double -> Vector Double
+{-@ (<#) :: xs:Vector R -> yss:{v:Matrix R | size xs == rows v} -> VectorN R (cols yss) @-}
+(<#) :: Vector R -> Matrix R -> Vector R
 (<#) = vXm
 
 {-@ reflect mXm @-}
-{-@ mXm :: xss:Matrix Double -> yss:{v:Matrix Double | cols xss = rows v} -> MatrixN Double {rows xss} {cols yss} @-}
-mXm :: Matrix Double -> Matrix Double -> Matrix Double
+{-@ mXm :: xss:Matrix R -> yss:{v:Matrix R | cols xss == rows v} -> MatrixN R (rows xss) (cols yss) @-}
+mXm :: Matrix R -> Matrix R -> Matrix R
 mXm (M i j xss) (M _ k yss) = M i k (Internal.mXm i j k xss yss)
 
 {-@ reflect <#> @-}
-{-@ (<#>) :: xss:Matrix Double -> yss:{v:Matrix Double | cols xss = rows v} -> MatrixN Double {rows xss} {cols yss} @-}
-(<#>) :: Matrix Double -> Matrix Double -> Matrix Double
+{-@ (<#>) :: xss:Matrix R -> yss:{v:Matrix R | cols xss == rows v} -> MatrixN R (rows xss) (cols yss) @-}
+(<#>) :: Matrix R -> Matrix R -> Matrix R
 (<#>) = mXm
 
 {-@ reflect mXv @-}
-{-@ mXv :: xss:Matrix Double -> ys:VectorN Double {cols xss} -> VectorN Double {rows xss} @-}
-mXv :: Matrix Double -> Vector Double -> Vector Double
+{-@ mXv :: xss:Matrix R -> ys:VectorN R (cols xss) -> VectorN R (rows xss) @-}
+mXv :: Matrix R -> Vector R -> Vector R
 mXv xss ys = flatten (xss <#> asColumn ys)
 
 {-@ reflect #> @-}
-{-@ (#>) :: xss:Matrix Double -> ys:VectorN Double {cols xss} -> VectorN Double {rows xss} @-}
-(#>) :: Matrix Double -> Vector Double -> Vector Double
+{-@ (#>) :: xss:Matrix R -> ys:VectorN R (cols xss) -> VectorN R (rows xss) @-}
+(#>) :: Matrix R -> Vector R -> Vector R
 (#>) = mXv
-
-{-@ reflect outer @-}
-{-@ outer :: xs:Vector Double -> ys:Vector Double -> MatrixN Double {size xs} {size ys} @-}
-outer :: Vector Double -> Vector Double -> Matrix Double
-outer xs ys = asColumn xs <#> asRow ys
