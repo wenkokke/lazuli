@@ -10,7 +10,7 @@ from tensorflow import keras
 parser = argparse.ArgumentParser()
 parser.add_argument(
     '--data', help="Name of the dataset: 'moons', 'swiss_roll'.",
-    dest='data')
+    dest='string')
 args = parser.parse_args()
 
 
