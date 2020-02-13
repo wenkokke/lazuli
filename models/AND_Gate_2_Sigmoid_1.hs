@@ -51,8 +51,8 @@ test3 = runNetwork model (2 :> [1,0]) == (1 :> [0])
 {-@ test4 :: TRUE @-}
 test4 = runNetwork model (2 :> [0,0]) == (1 :> [0])
 
-{-@ type Truthy = {v:R |  0.9 <= x && x <= 1.1} @-}
-{-@ type Falsy  = {v:R | -0.1 <= x && x <= 0.1} @-}
+{-@ type Truthy = {v:R |  0.9 <= v && v <= 1.1} @-}
+{-@ type Falsy  = {v:R | -0.1 <= v && v <= 0.1} @-}
 
 {-@ test5 :: Truthy -> Truthy -> TRUE @-}
 test5 x1 x2 = runNetwork model (2 :> [x1,x2]) == (1 :> [1])
