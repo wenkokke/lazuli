@@ -4,7 +4,7 @@ build:
 .PHONY: build
 
 test:
-	stack exec -- liquid -isrc test/*.hs
+	stack exec -- liquid -isrc models/*.hs
 	stack test --flag leadbeater:liquidhaskell
 
 .PHONY: test

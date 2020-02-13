@@ -51,27 +51,14 @@ test3 = runNetwork model (2 :> [1,0]) == (1 :> [0])
 {-@ test4 :: TRUE @-}
 test4 = runNetwork model (2 :> [0,0]) == (1 :> [0])
 
-{-@ reflect epsilon @-}
-epsilon :: R
-epsilon = 0.2
+{-@ type Truthy = {v:R |  0.9 <= x && x <= 1.1} @-}
+{-@ type Falsy  = {v:R | -0.1 <= x && x <= 0.1} @-}
 
-{-@ reflect btwn @-}
-btwn :: R -> R -> R -> Bool
-btwn l x u = l <= x && x <= u
-
-{-@ reflect truthy @-}
-truthy :: R -> Bool
-truthy x = btwn 0.9 x 1.1
-
-{-@ reflect falsy @-}
-falsy :: R -> Bool
-falsy x = btwn (-0.1) x 0.1
-
-{-@ test5 :: {v:R | truthy v} -> {v:R | truthy v} -> TRUE @-}
+{-@ test5 :: Truthy -> Truthy -> TRUE @-}
 test5 x1 x2 = runNetwork model (2 :> [x1,x2]) == (1 :> [1])
-{-@ test6 :: {v:R | falsy  v} -> {v:R | truthy v} -> TRUE @-}
+{-@ test6 :: Falsy  -> Truthy -> TRUE @-}
 test6 x1 x2 = runNetwork model (2 :> [x1,x2]) == (1 :> [0])
-{-@ test7 :: {v:R | truthy v} -> {v:R | falsy  v} -> TRUE @-}
+{-@ test7 :: Truthy -> Falsy  -> TRUE @-}
 test7 x1 x2 = runNetwork model (2 :> [x1,x2]) == (1 :> [0])
-{-@ test8 :: {v:R | falsy  v} -> {v:R | falsy  v} -> TRUE @-}
+{-@ test8 :: Falsy  -> Falsy  -> TRUE @-}
 test8 x1 x2 = runNetwork model (2 :> [x1,x2]) == (1 :> [0])
