@@ -42,7 +42,7 @@ library
 
 test-suite perceptron
   type:                    exitcode-stdio-1.0
-  main-is:                 test/perceptron.hs
+  main-is:                 models/AND_Gate_2_Sigmoid_1.hs
   build-depends:           base >=4.7 && <5.0
                          , liquidhaskell-cabal >=0.2 && <0.3
                          , leadbeater ==0.1.0.0
@@ -50,7 +50,7 @@ test-suite perceptron
   ghc-options:             -Wall -fno-warn-unused-matches
   x-liquidhaskell-options: --reflection
   x-liquidhaskell-options: --ple
-  x-liquidhaskell-verify:  test/perceptron.hs
+  x-liquidhaskell-verify:  models/AND_Gate_2_Sigmoid_1.hs
 
 source-repository head
   type:                    git

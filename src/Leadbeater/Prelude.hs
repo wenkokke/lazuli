@@ -127,10 +127,10 @@ length (_:xs) = 1 + length xs
 
 {-@ type ListNE a   = {l:List a | length l > 0} @-}
 {-@ type ListN  a N = {l:List a | length l == N} @-}
-{-@ type ListX  a X = ListN a (length X) @-}
+{-@ type ListX  a X = ListN a {length X} @-}
 
 {-@ reflect foldr @-}
-{-@ foldr :: f:(a -> b -> b) -> z:b -> xs:List a -> b @-}
+{-@ foldr :: (a -> b -> b) -> b -> List a -> b @-}
 foldr :: (a -> b -> b) -> b -> List a -> b
 foldr _ e []     = e
 foldr f e (x:xs) = f x (foldr f e xs)
@@ -141,42 +141,30 @@ sum :: List R -> R
 sum = foldr plus 0
 
 {-@ reflect map @-}
-{-@ map :: f:(a -> b) -> xs:List a -> ListX b xs @-}
+{-@ map :: (a -> b) -> xs:List a -> ListX b xs @-}
 map :: (a -> b) -> List a -> List b
 map f []     = []
 map f (x:xs) = f x : map f xs
 
-{-@ reflect take @-}
-{-@ take :: n:Nat -> {l:List a | n <= length l} -> ListN a n @-}
-take :: Int -> List a -> List a
-take 0 xs     = []
-take n (x:xs) = x : take (n - 1) xs
-
-{-@ reflect drop @-}
-{-@ drop :: n:Nat -> l:{v:List a | n <= length v} -> {v:List a | length v == length l - n} @-}
-drop :: Int -> List a -> List a
-drop 0 xs     = xs
-drop n (_:xs) = drop (n - 1) xs
-
 {-@ reflect replicate @-}
-{-@ replicate :: n:Nat -> x:a -> ListN a n @-}
+{-@ replicate :: n:Nat -> a -> ListN a n @-}
 replicate :: Int -> a -> List a
 replicate 0 x = []
 replicate n x = x : replicate (n - 1) x
 
 {-@ reflect append @-}
-{-@ append :: xs:List a -> ys:List a -> {v:List a | length v == length xs + length ys} @-}
+{-@ append :: xs:List a -> ys:List a -> ListN a {length xs + length ys} @-}
 append :: List a -> List a -> List a
 append []     ys = ys
 append (x:xs) ys = x : append xs ys
 
 {-@ reflect zipWith @-}
-{-@ zipWith :: f:(a -> b -> c) -> xs:List a -> ys:ListX b xs -> ListX c xs @-}
+{-@ zipWith :: (a -> b -> c) -> xs:List a -> ListX b xs -> ListX c xs @-}
 zipWith :: (a -> b -> c) -> List a -> List b -> List c
 zipWith f (x:xs) (y:ys) = f x y : zipWith f xs ys
 zipWith _ _      _      = []
 
-{-@ flatten :: r:Nat -> c:Nat -> xss:ListN (ListN a c) r -> {v:List a | length v == r * c} @-}
+{-@ flatten :: r:Nat -> c:Nat -> xss:ListN (ListN a c) r -> ListN a {r * c} @-}
 flatten :: Int -> Int -> List (List a) -> List a
 flatten r c (xs:xss) | r > 0 = xs `append` flatten (r - 1) c xss
 flatten _ _ _                = []
