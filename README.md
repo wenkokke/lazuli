@@ -1,6 +1,6 @@
-# Leadbeater
+# Lazuli
 
-Leadbeater is a library for leveraging the interactive theorem proving and SMT checking abilities of Liquid Haskell to verify properties of neural networks.
+Lazuli is a library for leveraging the interactive theorem proving and SMT checking abilities of Liquid Haskell to verify properties of neural networks.
 It currently supports feedforward neural networks using ReLU, sigmoid, and softmax activation functions.
 Networks are written as follows:
 ```haskell
@@ -54,4 +54,4 @@ The network we defined is robust around truthy and falsy inputs!
 
 ---
 
-You may also be interested in Leadbeater’s cousin, [StarChild](https://github.com/wenkokke/starchild)!
+You may also be interested in Lazuli’s friend, [StarChild](https://github.com/wenkokke/starchild)!

@@ -1,7 +1,7 @@
 {-@ LIQUID "--reflection" @-}
 {-@ LIQUID "--ple" @-}
 
-module Leadbeater.LinearAlgebra where
+module Lazuli.LinearAlgebra where
 
 import Prelude hiding
   ( all
@@ -18,9 +18,9 @@ import Prelude hiding
   , zipWith
   )
 
-import           Leadbeater.Prelude (List, R, plus)
-import qualified Leadbeater.Prelude as Internal
-import qualified Leadbeater.LinearAlgebra.Internal as Internal
+import           Lazuli.Prelude (List, R, plus)
+import qualified Lazuli.Prelude as Internal
+import qualified Lazuli.LinearAlgebra.Internal as Internal
 
 
 -- * Lists

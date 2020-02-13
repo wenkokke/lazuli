@@ -1,7 +1,7 @@
 {-@ LIQUID "--reflection" @-}
 {-@ LIQUID "--ple" @-}
 
-module Leadbeater.Prelude where
+module Lazuli.Prelude where
 
 import Prelude hiding
   ( all

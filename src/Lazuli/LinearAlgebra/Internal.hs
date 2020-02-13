@@ -1,7 +1,7 @@
 {-@ LIQUID "--reflection" @-}
 {-@ LIQUID "--ple" @-}
 
-module Leadbeater.LinearAlgebra.Internal where
+module Lazuli.LinearAlgebra.Internal where
 
 import Prelude hiding
   ( all
@@ -18,7 +18,7 @@ import Prelude hiding
   , zipWith
   )
 
-import Leadbeater.Prelude
+import Lazuli.Prelude
 
 {-@ reflect asRow @-}
 {-@ asRow :: xs:List R -> ListN (ListX R xs) 1 @-}

@@ -15,11 +15,11 @@ import Prelude hiding
   )
 
 import           Control.Monad (unless)
-import           Leadbeater.Network
-import           Leadbeater.LinearAlgebra
-import qualified Leadbeater.LinearAlgebra.Internal
-import           Leadbeater.Prelude (List, R, geq)
-import qualified Leadbeater.Prelude
+import           Lazuli.Network
+import           Lazuli.LinearAlgebra
+import qualified Lazuli.LinearAlgebra.Internal
+import           Lazuli.Prelude (List, R, geq)
+import qualified Lazuli.Prelude
 import           System.Exit
 
 

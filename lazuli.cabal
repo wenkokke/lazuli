@@ -1,8 +1,8 @@
-name:                      leadbeater
+name:                      lazuli
 version:                   0.1.0.0
-description:               Please see the README on GitHub at <https://github.com/wenkokke/leadbeater#readme>
-homepage:                  https://github.com/wenkokke/leadbeater#readme
-bug-reports:               https://github.com/wenkokke/leadbeater/issues
+description:               Please see the README on GitHub at <https://github.com/wenkokke/lazuli#readme>
+homepage:                  https://github.com/wenkokke/lazuli#readme
+bug-reports:               https://github.com/wenkokke/lazuli/issues
 author:                    Wen Kokke
 maintainer:                wen.kokke@gmail.com
 copyright:                 2020 Wen Kokke
@@ -23,11 +23,11 @@ flag liquidhaskell
   default:                 False
 
 library
-  exposed-modules:         Leadbeater.Network
-                         , Leadbeater.LinearAlgebra
-                         , Leadbeater.LinearAlgebra.Internal
-                         , Leadbeater.Prelude
-  other-modules:           Paths_leadbeater
+  exposed-modules:         Lazuli.Network
+                         , Lazuli.LinearAlgebra
+                         , Lazuli.LinearAlgebra.Internal
+                         , Lazuli.Prelude
+  other-modules:           Paths_lazuli
   build-depends:           base >=4.7 && <5.0
                          , liquidhaskell-cabal >=0.2 && <0.3
   hs-source-dirs:          src
@@ -35,17 +35,17 @@ library
   ghc-options:             -Wall -fno-warn-unused-matches
   x-liquidhaskell-options: --reflection
   x-liquidhaskell-options: --ple
-  x-liquidhaskell-verify:  src/Leadbeater/Network.hs
-  x-liquidhaskell-verify:  src/Leadbeater/LinearAlgebra.hs
-  x-liquidhaskell-verify:  src/Leadbeater/LinearAlgebra/Internal.hs
-  x-liquidhaskell-verify:  src/Leadbeater/Prelude.hs
+  x-liquidhaskell-verify:  src/Lazuli/Network.hs
+  x-liquidhaskell-verify:  src/Lazuli/LinearAlgebra.hs
+  x-liquidhaskell-verify:  src/Lazuli/LinearAlgebra/Internal.hs
+  x-liquidhaskell-verify:  src/Lazuli/Prelude.hs
 
 test-suite perceptron
   type:                    exitcode-stdio-1.0
   main-is:                 models/AND_Gate_2_Sigmoid_1.hs
   build-depends:           base >=4.7 && <5.0
                          , liquidhaskell-cabal >=0.2 && <0.3
-                         , leadbeater ==0.1.0.0
+                         , lazuli ==0.1.0.0
   default-language:        Haskell2010
   ghc-options:             -Wall -fno-warn-unused-matches
   x-liquidhaskell-options: --reflection
@@ -54,4 +54,4 @@ test-suite perceptron
 
 source-repository head
   type:                    git
-  location:                https://github.com/wenkokke/leadbeater
+  location:                https://github.com/wenkokke/lazuli

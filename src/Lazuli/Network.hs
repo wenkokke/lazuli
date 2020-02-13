@@ -1,7 +1,7 @@
 {-@ LIQUID "--reflection" @-}
 {-@ LIQUID "--ple"        @-}
 
-module Leadbeater.Network where
+module Lazuli.Network where
 
 import Prelude hiding
   ( all
@@ -20,10 +20,10 @@ import Prelude hiding
   , zipWith
   )
 
-import           Leadbeater.LinearAlgebra
-import qualified Leadbeater.LinearAlgebra.Internal
-import           Leadbeater.Prelude (R, plus, minus, times, rdiv, max, min, leq, geq)
-import qualified Leadbeater.Prelude
+import           Lazuli.LinearAlgebra
+import qualified Lazuli.LinearAlgebra.Internal
+import           Lazuli.Prelude (R, plus, minus, times, rdiv, max, min, leq, geq)
+import qualified Lazuli.Prelude
 
 
 -- * Activation functions
