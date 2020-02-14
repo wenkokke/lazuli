@@ -29,13 +29,15 @@ import qualified Lazuli.Prelude
 -- * Activation functions
 
 data Activation
-   = ReLU
+   = Linear
+   | ReLU
    | Sigmoid
    | Softmax
 
 {-@
 data Activation
-   = ReLU
+   = Linear
+   | ReLU
    | Sigmoid
    | Softmax
 @-}
@@ -85,6 +87,7 @@ lsoftmax xs = norm (map lexp xs)
 {-@ reflect runActivation @-}
 {-@ runActivation :: Activation -> xs:VectorNE R -> VectorX R xs @-}
 runActivation :: Activation -> Vector R -> Vector R
+runActivation Linear  xs = xs
 runActivation ReLU    xs = map relu xs
 runActivation Sigmoid xs = map lsigmoid xs
 runActivation Softmax xs = lsoftmax xs
@@ -94,14 +97,14 @@ runActivation Softmax xs = lsoftmax xs
 
 data Layer = Layer
    { weights    :: Matrix R
-   , bias       :: Vector R
+   , biases     :: Vector R
    , activation :: Activation
    }
 
 {-@
 data Layer = Layer
    { weights    :: MatrixNE R
-   , bias       :: VectorN R (cols weights)
+   , biases     :: VectorN R (cols weights)
    , activation :: Activation
    }
 @-}
@@ -122,7 +125,7 @@ layerOutputs l = cols (weights l)
 {-@ reflect runLayer @-}
 {-@ runLayer :: l:Layer -> VectorN R (layerInputs l) -> VectorN R (layerOutputs l) @-}
 runLayer :: Layer -> Vector R -> Vector R
-runLayer l v = runActivation (activation l) (bias l <+> (v <# weights l))
+runLayer l v = runActivation (activation l) (biases l <+> (v <# weights l))
 
 
 -- * Networks

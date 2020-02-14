@@ -51,6 +51,8 @@ test-suite perceptron
   x-liquidhaskell-options: --reflection
   x-liquidhaskell-options: --ple
   x-liquidhaskell-verify:  models/AND_Gate_2_Sigmoid_1.hs
+                         , models/Moons_2_ReLU_10_ReLU_10_Softmax_2.hs
+                         , models/SwissRolls_3_ReLU_10_ReLU_10_Softmax_2.hs
 
 source-repository head
   type:                    git

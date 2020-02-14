@@ -33,7 +33,7 @@ layer1 = Layer { weights    = (2 >< 1)
                               [ 1 |> [17561.5]
                               , 1 |> [17561.5]
                               ]
-               , bias       = 1 :> [-25993.1]
+               , biases     = 1 :> [-25993.1]
                , activation = Sigmoid
                }
 
