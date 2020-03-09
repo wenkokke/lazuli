@@ -35,6 +35,7 @@ library
   ghc-options:             -Wall -fno-warn-unused-matches
   x-liquidhaskell-options: --reflection
   x-liquidhaskell-options: --ple
+  x-liquidhaskell-options: --prune-unsorted
   x-liquidhaskell-verify:  src/Lazuli/Network.hs
   x-liquidhaskell-verify:  src/Lazuli/LinearAlgebra.hs
   x-liquidhaskell-verify:  src/Lazuli/LinearAlgebra/Internal.hs

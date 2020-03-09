@@ -22,7 +22,7 @@ import Prelude hiding
 
 import           Lazuli.LinearAlgebra
 import qualified Lazuli.LinearAlgebra.Internal
-import           Lazuli.Prelude (R, plus, minus, times, rdiv, max, min, leq, geq)
+import           Lazuli.Prelude (R, rdiv, max, min, leq, geq)
 import qualified Lazuli.Prelude
 
 
@@ -58,9 +58,9 @@ lexp x | x `leq` (-1.0) = 0.00001
        | otherwise      = x + 1.0
 
 {-@ reflect norm @-}
-{-@ norm :: bar:VectorNE Rpos -> VectorX R bar @-}
+{-@ norm :: xs:VectorNE Rpos -> VectorX R xs @-}
 norm :: Vector R -> Vector R
-norm foo = let s = sumPos foo in map (`rdiv` s) foo
+norm xs = let s = sumPos xs in map (`rdiv` s) xs
 
 -- cannot be translated to SMTLIB2
 {-@ assume sigmoid :: x:R -> {v:R | v == lsigmoid x} @-}

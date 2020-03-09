@@ -100,6 +100,7 @@ geq x y = x >= y
 gt :: Ord a => a -> a -> Bool
 gt x y = x > y
 
+{-# NOINLINE (&&&) #-}
 {-@ reflect &&& @-}
 {-@ (&&&) :: Bool -> Bool -> Bool @-}
 (&&&) :: Bool -> Bool -> Bool
@@ -107,6 +108,7 @@ False &&& _     = False
 True  &&& True  = True
 True  &&& False = False
 
+{-# NOINLINE (|||) #-}
 {-@ reflect ||| @-}
 {-@ (|||) :: Bool -> Bool -> Bool @-}
 (|||) :: Bool -> Bool -> Bool
@@ -138,7 +140,7 @@ foldr f e (x:xs) = f x (foldr f e xs)
 {-@ reflect sum @-}
 {-@ sum :: List R -> R @-}
 sum :: List R -> R
-sum = foldr plus 0
+sum xs = foldr plus 0 xs
 
 {-@ reflect map @-}
 {-@ map :: (a -> b) -> xs:List a -> ListX b xs @-}
@@ -163,11 +165,6 @@ append (x:xs) ys = x : append xs ys
 zipWith :: (a -> b -> c) -> List a -> List b -> List c
 zipWith f (x:xs) (y:ys) = f x y : zipWith f xs ys
 zipWith _ _      _      = []
-
-{-@ flatten :: r:Nat -> c:Nat -> xss:ListN (ListN a c) r -> ListN a {r * c} @-}
-flatten :: Int -> Int -> List (List a) -> List a
-flatten r c (xs:xss) | r > 0 = xs `append` flatten (r - 1) c xss
-flatten _ _ _                = []
 
 {-@ reflect singleton @-}
 {-@ singleton :: a -> ListN a 1 @-}

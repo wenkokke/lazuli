@@ -23,7 +23,7 @@ import Lazuli.Prelude
 {-@ reflect asRow @-}
 {-@ asRow :: xs:List R -> ListN (ListX R xs) 1 @-}
 asRow :: List R -> List (List R)
-asRow xs = [xs]
+asRow xs = singleton xs
 
 {-@ reflect asColumn @-}
 {-@ asColumn :: xs:List R -> ListX (ListN R 1) xs @-}
@@ -49,17 +49,17 @@ dot xs ys = sum (zipWith times xs ys)
 {-@ reflect vAv @-}
 {-@ vAv :: xs:List R -> ys:ListX R xs -> ListX R xs @-}
 vAv :: List R -> List R -> List R
-vAv = zipWith plus
+vAv xs ys = zipWith plus xs ys
 
 {-@ reflect sAv @-}
 {-@ sAv :: x:R -> ys:List R -> ListX R ys @-}
 sAv :: R -> List R -> List R
-sAv x = map (plus x)
+sAv x ys = map (plus x) ys
 
 {-@ reflect scale @-}
 {-@ scale :: x:R -> ys:List R -> ListX R ys @-}
 scale :: R -> List R -> List R
-scale x = map (times x)
+scale x ys = map (times x) ys
 
 {-@ reflect vXm @-}
 {-@ vXm :: r:Nat -> c:Nat -> xs:ListN R r -> yss:ListN (ListN R c) r -> ListN R c @-}

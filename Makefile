@@ -1,5 +1,5 @@
 LIQUID=stack exec -- liquid
-STACK=stack --flag lazuli:liquidhaskell
+STACK=stack
 MODELS=$(patsubst train_%.py,models/%.hs,$(wildcard train_*.py))
 BENCHMARK_START=76
 BENCHMARK_STOP=100
@@ -13,13 +13,13 @@ BENCHMARKS_H5_TL=$(wordlist 2,$(words $(BENCHMARKS_H5)),$(BENCHMARKS_H5))
 
 .PHONY: build
 build:
-	$(STACK) build
+	$(STACK) build --flag lazuli:liquidhaskell
 
 
 .PHONY: test
 test:
-	$(LIQUID) -isrc models/AND_Gate_2_Sigmoid_1.hs
 	$(STACK) test
+	$(LIQUID) -isrc models/AND_Gate_2_Sigmoid_1.hs
 
 
 .PHONY: clean
